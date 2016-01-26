@@ -1,0 +1,22 @@
+{
+	"name": "INN/wp-mailchimp-tools",
+	"type": "library",
+	"version": "2.0.6",
+	"description": "Collection of reusable tools/components for authoring MailChimp newsletters via the WordPress dashboard",
+	"keywords": ["email", "api"],
+	"homepage": "https://nerds.inn.org/",
+	"license": "MIT",
+	"authors": [{
+		"name": "INN Nerds",
+		"email": "nerds@inn.org",
+		"homepage": "http://nerds.inn.org",
+		"role": "Developer"
+	}],
+	"require": {
+		"php": ">=5.2.0",
+		"mailchimp/mailchimp": "2.0.6"
+	},
+	"autoload": {
+		"classmap": ["inc/"]
+	}
+}
