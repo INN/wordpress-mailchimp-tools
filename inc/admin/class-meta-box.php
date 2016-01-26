@@ -15,14 +15,25 @@ class MCMetaBox {
 		$this->api = mailchimp_tools_get_api_handle();
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'save_post', array( $this, 'process_form' ) );
 	}
 
 	public function add_meta_box() {
-		throw new NotImplementedException('The `add_meta_box` method is not implemented.');
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log('The `add_meta_box` method is not implemented.');
+		}
+	}
+
+	public function process_form() {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log('The `process_form` method is not implemented.');
+		}
 	}
 
 	public function render_meta_box() {
-		throw new NotImplementedException('The `render_meta_box` method is not implemented.');
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log('The `render_meta_box` method is not implemented.');
+		}
 	}
 
 	public function enqueue_assets() {

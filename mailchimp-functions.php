@@ -57,9 +57,10 @@ if ( ! function_exists( 'mailchimp_tools_admin_init_settings' ) ) {
  */
 function mailchimp_tools_get_api_handle($args=array()) {
 	$settings = get_option( 'mailchimp_settings' );
-	$args = wp_parse_args($args, array(
-		'debug' => ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? WP_DEBUG : false
-	));
+
+	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		$args = wp_parse_args( $args, array( 'debug' => true ) );
+	}
 
 	return new Mailchimp( $settings['mailchimp_api_key'], $args );
 }
