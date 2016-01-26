@@ -36,17 +36,18 @@
 		<input type="text" name="mailchimp[subject]" placeholder="Campaign email subject line (subscribers will see this)" <?php if ( $existing['subject'] ) { ?>value="<?php echo $existing['subject']; ?>"<?php } ?>></input>
 	</label>
 
-	<h3>Choose a template:</h3>
-	<select name="mailchimp[template_id]">
-		<?php foreach ( $templates['user'] as $key => $template ) { ?>
-			<option value="<?php echo $template['id']; ?>" <?php selected( $existing['template_id'], $template['id'] ); ?>" /><?php echo $template['name']; ?></option>
-		<?php } ?>
-	</select>
+	<div id="mailchimp-tools-template" <?php if ( ! empty( $existing ) && $existing['type'] == 'plaintext' ) { ?>style="display: none;"<?php } ?>>
+		<h3>Choose a template:</h3>
+		<select name="mailchimp[template_id]">
+			<?php foreach ( $templates['user'] as $key => $template ) { ?>
+				<option value="<?php echo $template['id']; ?>" <?php selected( $existing['template_id'], $template['id'] ); ?>" /><?php echo $template['name']; ?></option>
+			<?php } ?>
+		</select>
+	</div>
 
 	<h3>Campaign actions:</h3>
 	<p>
-		<input type="submit" class="button button-primary button-large" name="mailchimp[send]" id="send" value="Send now"></input>
-		<input type="submit" class="button button-large" name="mailchimp[draft]" id="draft" value="<?php echo ( empty( $existing ) ) ? 'Create' : 'Update'; ?> draft"></input>
-		<?php /* <input type="submit" class="button button-large" name="mailchimp[schedule]" id="schedule" value="Schedule send"></input> */ ?>
+		<?php submit_button('Send', 'primary', 'mailchimp[send]', false, $attrs); ?>
+		<?php submit_button(( empty( $existing ) ) ? 'Create draft' : 'Update draft', 'large', 'mailchimp[draft]', false, $attrs); ?>
 	</p>
 </div>

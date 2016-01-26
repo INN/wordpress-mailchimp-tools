@@ -103,6 +103,10 @@ class CampaignEdit extends MCMetaBox {
 		$type = $data['type'];
 		unset( $data['type'] );
 
+		if ( $type == 'plaintext' ) {
+			unset( $data['template_id'] );
+		}
+
 		// Stash segment options if present and unset
 		$segment_options = ( isset( $data['segment'] ) ) ? $data['segment'] : null;
 		unset( $data['segment'] );
@@ -123,8 +127,12 @@ class CampaignEdit extends MCMetaBox {
 		$html = apply_filters( 'the_content', $post->post_content );
 
 		$campaign_content = array(
-			'html' => $html, // the content!
-			'text' => '' // Leave blank for the auto-generated text content
+			'html' => $html,
+			'text' => wp_strip_all_tags($html),
+			'sections' => array(
+				'body' => $html,
+				'header' => '<h1>' . $post->post_title . '</h1>'
+			)
 		);
 
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
