@@ -35,6 +35,16 @@ class CampaignEdit extends MCMetaBox {
 	}
 
 	public function render_meta_box() {
+		$post = get_post();
+
+		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
+		if ( ! empty( $cid ) ) {
+			$existing_campaign = $this->api->campaigns->getList( array( 'campaign_id' => $cid ) );
+			if ( isset( $existing_campaign['data'][0] ) ) {
+				$existing = $existing_campaign['data'][0];
+			}
+		}
+
 		$lists = $this->api->lists->getList();
 		$segments = array();
 
@@ -54,7 +64,8 @@ class CampaignEdit extends MCMetaBox {
 					'base' => false
 				),
 				array( 'include_drag_and_drop' => true )
-			)
+			),
+			'existing' => $existing
 		);
 		mailchimp_tools_render_template( 'campaign-edit.php', $context );
 	}
@@ -64,21 +75,21 @@ class CampaignEdit extends MCMetaBox {
 			$data = $_POST['mailchimp'];
 
 			if ( isset( $data['send'] ) ) {
-				$this->send_campaign($data);
+				$this->send_campaign( $data );
 			}
 
 			if ( isset( $data['draft'] ) ) {
-				$this->create_campaign($data);
+				$this->create_or_update_campaign( $data );
 			}
 		}
 	}
 
 	public function send_campaign($data) {
-		$this->create_campaign($data);
+		$this->create_or_update_campaign( $data );
 		// Then send.
 	}
 
-	public function create_campaign($data) {
+	public function create_or_update_campaign($data) {
 		$post = get_post();
 
 		// Remove submit button value from $data
@@ -116,16 +127,29 @@ class CampaignEdit extends MCMetaBox {
 			'text' => '' // Leave blank for the auto-generated text content
 		);
 
-		$response = $this->api->campaigns->create(
-			$type,
-			$campaign_options,
-			$campaign_content,
-			$segment_options,
-			null
-		);
+		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
+		if ( empty( $cid ) ) {
+			$response = $this->api->campaigns->create(
+				$type,
+				$campaign_options,
+				$campaign_content,
+				$segment_options,
+				null
+			);
 
-		update_post_meta( $post->ID, 'mailchimp_web_id', $response['web_id'] );
-		update_post_meta( $post->ID, 'mailchimp_mc_id', $response['mc_id'] );
+			update_post_meta( $post->ID, 'mailchimp_web_id', $response['web_id'] );
+			update_post_meta( $post->ID, 'mailchimp_cid', $response['id'] );
+		} else {
+			$updates = array(
+				'options' => $campaign_options,
+				'content' => $campaign_content,
+				'segment_opts' => $segment_options
+			);
+
+			foreach ( $updates as $name => $value ) {
+				$this->api->campaigns->update($cid, $name, $value);
+			}
+		}
 	}
 
 	public function enqueue_assets() {
