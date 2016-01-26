@@ -19,26 +19,43 @@ class CampaignEdit extends MCMetaBox {
 	 */
 
 	public function add_meta_box() {
-		var_log('add_meta_box');
-		add_meta_box(
-			'mailchimp-campaign-edit',
-			'MailChimp Campaign',
-			array( $this, 'render_meta_box' ),
-			$this->post_type,
-			'side'
+		if ( ! is_array( $this->post_type ) ) {
+			$this->post_type = (array) $this->post_type;
+		}
+
+		foreach ( $this->post_type as $post_type ) {
+			add_meta_box(
+				'mailchimp-campaign-edit',
+				'MailChimp Campaign',
+				array( $this, 'render_meta_box' ),
+				$post_type,
+				'advanced'
+			);
+		}
+	}
+
+	public function render_meta_box() {
+		$lists = $this->api->lists->getList();
+		$segments = array();
+
+		foreach ( $lists['data'] as $list ) {
+			$list_segments = $this->api->lists->segments( $list['id'] );
+			if ( ! empty( $list_segments['saved'] ) ) {
+				$segments[$list['id']] = $list_segments['saved'];
+			}
+		}
+
+		$context = array(
+			'lists' => $lists,
+			'segments' => $segments,
+			'templates' => $this->api->templates->getList(
+				array(
+					'gallery' => false,
+					'base' => false
+				),
+				array( 'include_drag_and_drop' => true )
+			)
 		);
+		mailchimp_tools_render_template( 'campaign-edit.php', $context );
 	}
-
-	public function render_meta_box() { ?>
-		<p>Campaigns!</p><?php
-
-		var_log('render_meta_box');
-		$lists = $this->api->lists->getList(); ?>
-			<ul>
-			<?php foreach ( $lists['data'] as $key => $list ) { ?>
-				<li><input type="checkbox" name="mailchimp_send_to_lists[]" value="<?php echo $list['id']; ?>" /><?php echo $list['name']; ?></input></li>
-			<?php } ?>
-			</ul><?php
-	}
-
 }
