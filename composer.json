@@ -1,22 +1,23 @@
 {
-	"name": "inn/wordpress-mailchimp-tools",
-	"type": "library",
-	"version": "0.0.1",
-	"description": "Collection of tools for authoring MailChimp newsletters via the WordPress dashboard",
-	"keywords": ["email", "api"],
-	"homepage": "https://nerds.inn.org/",
-	"license": "GPL-2.0",
-	"authors": [{
-		"name": "INN Nerds",
-		"email": "nerds@inn.org",
-		"homepage": "http://nerds.inn.org",
-		"role": "Developer"
-	}],
-	"require": {
-		"php": ">=5.2.0",
-		"mailchimp/mailchimp": "2.0.6"
-	},
-	"autoload": {
-		"classmap": ["inc/"]
-	}
+  "name": "inn/wordpress-mailchimp-tools",
+  "type": "library",
+  "version": "0.0.1",
+  "description": "Collection of tools for authoring MailChimp newsletters via the WordPress dashboard",
+  "keywords": ["email", "api"],
+  "homepage": "https://nerds.inn.org/",
+  "license": "GPL-2.0",
+  "authors": [{
+    "name": "INN Nerds",
+    "email": "nerds@inn.org",
+    "homepage": "http://nerds.inn.org",
+    "role": "Developer"
+  }],
+  "require": {
+    "php": ">=5.2.0",
+    "mailchimp/mailchimp": "2.0.6"
+  },
+  "autoload": {
+    "classmap": ["inc/"],
+    "files": ["mailchimp-tools.php"]
+  }
 }
