@@ -34,7 +34,7 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 		);
 		$options = wp_parse_args( $options, $defaults );
 
-		new CampaignEdit();
+		new CampaignEdit($options);
 	}
 }
 

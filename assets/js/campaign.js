@@ -17,8 +17,8 @@
       names.push(val.name);
     });
 
-    $.each(required, function(req) {
-      if (names.indexOf(required) < 0) {
+    $.each(required, function(idx, req) {
+      if (names.indexOf(req) < 0) {
         valid = false;
         return false;
       }

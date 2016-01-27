@@ -15,7 +15,7 @@
 				<li><input type="radio" name="mailchimp[type]" value="regular">Regular</input></li>
 				<li><input type="radio" name="mailchimp[type]" value="plaintext">Text-only</input></li>
 			<?php } else { ?>
-				<li><input type="radio" name="mailchimp[type]" checked disabled
+				<li><input type="radio" name="mailchimp[type]" checked readonly class="disabled"
 						value="<?php echo $existing['type']; ?>"><?php echo ( $existing['type'] == 'regular' ) ? 'Regular' : 'Text-only'; ?></input></li>
 			<?php } ?>
 		</ul>
