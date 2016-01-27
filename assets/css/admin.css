@@ -4,6 +4,8 @@
   padding: 0;
 }
 
+.mailchimp-tools h3,
+.mailchimp-tools #mailchimp-tools-template,
 #poststuff .mailchimp-tools h3,
 #poststuff .mailchimp-tools #mailchimp-tools-template {
   margin-top: 2em;
@@ -11,6 +13,7 @@
 #poststuff .mailchimp-tools h3:first-child {
   margin-top: 0;
 }
+.mailchimp-tools h4,
 #poststuff .mailchimp-tools h4 {
   margin: 1em 0 1em 2em;
 }

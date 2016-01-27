@@ -35,6 +35,10 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 		$options = wp_parse_args( $options, $defaults );
 
 		new CampaignEdit($options);
+
+		foreach ( (array) $options['post_type'] as $post_type ) {
+			new MailChimpPostTypeSettings( $post_type );
+		}
 	}
 }
 
@@ -64,3 +68,19 @@ function mailchimp_tools_get_api_handle($args=array()) {
 
 	return new Mailchimp( $settings['mailchimp_api_key'], $args );
 }
+
+/**
+ * Register MailChimp Tools assets
+ *
+ * @since 0.0.1
+ */
+function mailchimp_tools_register_assets() {
+	wp_register_script(
+		'mailchimp-tools-campaign-common',
+		MAILCHIMP_TOOLS_DIR_URI . '/assets/js/campaign-common.js',
+		array( 'jquery' ),
+		MAILCHIMP_TOOLS_VER,
+		true
+	);
+}
+add_action( 'init', 'mailchimp_tools_register_assets' );

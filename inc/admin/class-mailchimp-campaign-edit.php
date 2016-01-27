@@ -176,17 +176,16 @@ class CampaignEdit extends MCMetaBox {
 		parent::enqueue_assets();
 
 		wp_register_script(
-			'mailchimp-tools-campaign',
-			MAILCHIMP_TOOLS_DIR_URI . '/assets/js/campaign.js',
-			array('jquery'),
+			'mailchimp-tools-campaign-edit',
+			MAILCHIMP_TOOLS_DIR_URI . '/assets/js/campaign-edit.js',
+			array( 'mailchimp-tools-campaign-common' ),
 			MAILCHIMP_TOOLS_VER,
 			true
 		);
 
 		$screen = get_current_screen();
-		if ( in_array( $screen->post_type, $this->post_type ) ) {
-			wp_enqueue_script('mailchimp-tools-campaign');
+		if ( in_array( $screen->post_type, $this->post_type ) && $screen->base == 'post' ) {
+			wp_enqueue_script('mailchimp-tools-campaign-edit');
 		}
-
 	}
 }

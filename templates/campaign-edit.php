@@ -50,7 +50,7 @@
 			<h3>Choose a template:</h3>
 			<select name="mailchimp[template_id]">
 				<?php foreach ( $templates['user'] as $key => $template ) { ?>
-					<option value="<?php echo $template['id']; ?>" <?php selected( $existing['template_id'], $template['id'] ); ?>" /><?php echo $template['name']; ?></option>
+					<option value="<?php echo $template['id']; ?>" <?php selected( $existing['template_id'], $template['id'] ); ?> /><?php echo $template['name']; ?></option>
 				<?php } ?>
 			</select>
 		</div>
