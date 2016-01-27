@@ -1,5 +1,5 @@
 {
-	"name": "INN/wordpress-mailchimp-tools",
+	"name": "inn/wordpress-mailchimp-tools",
 	"type": "library",
 	"version": "0.0.1",
 	"description": "Collection of tools for authoring MailChimp newsletters via the WordPress dashboard",
