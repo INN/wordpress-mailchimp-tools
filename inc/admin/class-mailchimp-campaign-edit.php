@@ -9,13 +9,13 @@ class CampaignEdit extends MCMetaBox {
 
 	/*
 	 * TODO: Meta box to allow:
-	 * - Send post to MailChimp as draft
-	 * - Schedule post to send as MailChimp Campaign
-	 * - Send a post as a Campaign NOW
 	 * - Send a preview/test email to select email address
+	 * - Schedule post to send as MailChimp Campaign
 	 * - Preview the Campaign in the post editor
-	 * - Select a MailChimp template to use for the Campaign
-	 * - Select a list (or list segment) to send to
+	 * - DONE: Send post to MailChimp as draft
+	 * - DONE: Send a post as a Campaign NOW
+	 * - DONE: Select a MailChimp template to use for the Campaign
+	 * - DONE: Select a list (or list segment) to send to
 	 */
 
 	public function add_meta_box() {
@@ -36,6 +36,7 @@ class CampaignEdit extends MCMetaBox {
 
 	public function render_meta_box() {
 		$post = get_post();
+		$settings = get_option( 'mailchimp_settings' );
 
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
 		if ( ! empty( $cid ) ) {
@@ -55,6 +56,10 @@ class CampaignEdit extends MCMetaBox {
 			}
 		}
 
+		$web_id = get_post_meta( $post->ID, 'mailchimp_web_id', true );
+		$mc_api_key_parts = explode( '-', $settings['mailchimp_api_key'] );
+		$mc_api_endpoint = $mc_api_key_parts[1];
+
 		$context = array(
 			'lists' => $lists,
 			'segments' => $segments,
@@ -65,7 +70,9 @@ class CampaignEdit extends MCMetaBox {
 				),
 				array( 'include_drag_and_drop' => true )
 			),
-			'existing' => $existing
+			'existing' => $existing,
+			'mc_api_endpoint' => $mc_api_endpoint,
+			'web_id' => $web_id
 		);
 		mailchimp_tools_render_template( 'campaign-edit.php', $context );
 	}
@@ -86,7 +93,12 @@ class CampaignEdit extends MCMetaBox {
 
 	public function send_campaign($data) {
 		$this->create_or_update_campaign( $data );
-		// Then send.
+
+		$post = get_post();
+		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
+		if ( ! empty( $cid ) ) {
+			$this->api->campaigns->send( $cid );
+		}
 	}
 
 	public function create_or_update_campaign($data) {
