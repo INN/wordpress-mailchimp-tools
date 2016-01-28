@@ -23,6 +23,7 @@ if ( defined( 'MAILCHIMP_TOOLS_LOADED' ) && MAILCHIMP_TOOLS_LOADED ) {
  */
 define( 'MAILCHIMP_TOOLS_LOADED', true );
 define( 'MAILCHIMP_TOOLS_DIR', __DIR__ );
+/* TODO: using plugins_url makes this tool set way less flexible */
 define( 'MAILCHIMP_TOOLS_DIR_URI', plugins_url(basename(__DIR__), __DIR__));
 define( 'MAILCHIMP_TOOLS_TEMPLATE_DIR', MAILCHIMP_TOOLS_DIR . '/templates' );
 define( 'MAILCHIMP_TOOLS_VER', '0.0.1' );

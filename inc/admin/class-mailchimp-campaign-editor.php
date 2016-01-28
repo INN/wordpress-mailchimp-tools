@@ -5,28 +5,20 @@
  * @package MailChimp Tools
  * @since 0.0.1
  */
-class CampaignEdit extends MCMetaBox {
+class CampaignEditor extends MCMetaBox {
 
 	/*
-	 * TODO: Meta box to allow:
+	 * TODO:
 	 * - Send a preview/test email to select email address
 	 * - Schedule post to send as MailChimp Campaign
-	 * - Preview the Campaign in the post editor
-	 * - DONE: Send post to MailChimp as draft
-	 * - DONE: Send a post as a Campaign NOW
-	 * - DONE: Select a MailChimp template to use for the Campaign
-	 * - DONE: Select a list (or list segment) to send to
+	 * - WIP: Preview the Campaign in the post editor
 	 */
 
-	public function add_meta_box() {
-		add_meta_box(
-			'mailchimp-campaign-edit',
-			'MailChimp Campaign Editor',
-			array( $this, 'render_meta_box' ),
-			$this->post_type,
-			'advanced'
-		);
-	}
+	public $label = 'MailChimp Campaign Editor';
+
+	public $id = 'mailchimp-campaign-edit';
+
+	public $location = 'advanced';
 
 	public function render_meta_box() {
 		$post = get_post();

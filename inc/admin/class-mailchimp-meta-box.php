@@ -6,6 +6,10 @@
  * @since 0.0.1
  */
 class MCMetaBox {
+	public $label = 'MailChimp Meta box';
+	public $id = 'mailchimp-meta-box';
+	public $location = 'normal';
+
 	public function __construct($post_type='post') {
 		$this->post_type = $post_type;
 		$this->api = mailchimp_tools_get_api_handle();
@@ -16,9 +20,13 @@ class MCMetaBox {
 	}
 
 	public function add_meta_box() {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( 'The `add_meta_box` method is not implemented.' );
-		}
+		add_meta_box(
+			$this->id,
+			$this->label,
+			array( $this, 'render_meta_box' ),
+			$this->post_type,
+			$this->location
+		);
 	}
 
 	public function process_form($post_id=null, $post=null) {

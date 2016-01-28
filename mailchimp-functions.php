@@ -29,11 +29,22 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 	 * @since 0.0.1
 	 */
 	function mailchimp_tools_register_for_post_type($post_type='post', $options=array()) {
-		new CampaignEdit( $post_type );
-		new PostTypeSettings( $post_type );
+		$options = wp_parse_args($options, array(
+			'preview' => true,
+			'editor' => true,
+			'settings' => true
+		));
 
-		if ( isset( $options['preview'] ) && $options['preview'] ) {
-			new CampaignPreview( $post_type, $options );
+		if ( (bool) $options['editor'] ) {
+			new CampaignEditor( $post_type );
+		}
+
+		if ( (bool) $options['settings'] ) {
+			new PostTypeSettings( $post_type );
+		}
+
+		if ( (bool) $options['preview'] ) {
+			new CampaignPreview( $post_type );
 		}
 	}
 }

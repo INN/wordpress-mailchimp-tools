@@ -7,10 +7,38 @@
  */
 class CampaignPreview extends MCMetaBox {
 
+	public $label = 'MailChimp Campaign Preview';
+
+	public $id = 'mailchimp-campaign-preview';
+
+	public $location = 'side';
+
 	public function __construct($post_type='post') {
 		parent::__construct($post_type);
 		add_action( 'wp_loaded', array( $this, 'bless_query_var' ) );
 		add_action( 'template_redirect', array( $this, 'render_preview_page' ) );
+	}
+
+	public function add_meta_box() {
+		if ( strstr( $_SERVER['REQUEST_URI'], 'post-new.php' ) ) {
+			return false;
+		}
+
+		parent::add_meta_box();
+	}
+
+	public function render_meta_box() {
+		$post = get_post();
+		$settings = get_option( 'mailchimp_settings' );
+		$web_id = get_post_meta( $post->ID, 'mailchimp_web_id', true );
+		$mc_api_key_parts = explode( '-', $settings['mailchimp_api_key'] );
+		$mc_api_endpoint = $mc_api_key_parts[1];
+		$context = array(
+			'post' => $post,
+			'mc_api_endpoint' => $mc_api_endpoint,
+			'web_id' => $web_id,
+		);
+		mailchimp_tools_render_template( 'campaign-preview.php', $context );
 	}
 
 	/*
@@ -62,31 +90,4 @@ class CampaignPreview extends MCMetaBox {
 		add_rewrite_endpoint('campaign_preview', EP_ALL);
 	}
 
-	public function add_meta_box() {
-		if ( strstr( $_SERVER['REQUEST_URI'], 'post-new.php' ) ) {
-			return false;
-		}
-
-		add_meta_box(
-			'mailchimp-campaign-preview',
-			'MailChimp Campaign Preview',
-			array( $this, 'render_meta_box' ),
-			$this->post_type,
-			'side'
-		);
-	}
-
-	public function render_meta_box() {
-		$post = get_post();
-		$settings = get_option( 'mailchimp_settings' );
-		$web_id = get_post_meta( $post->ID, 'mailchimp_web_id', true );
-		$mc_api_key_parts = explode( '-', $settings['mailchimp_api_key'] );
-		$mc_api_endpoint = $mc_api_key_parts[1];
-		$context = array(
-			'post' => $post,
-			'mc_api_endpoint' => $mc_api_endpoint,
-			'web_id' => $web_id,
-		);
-		mailchimp_tools_render_template( 'campaign-preview.php', $context );
-	}
 }
