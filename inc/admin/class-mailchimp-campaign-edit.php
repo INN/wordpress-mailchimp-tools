@@ -21,7 +21,7 @@ class CampaignEdit extends MCMetaBox {
 	public function add_meta_box() {
 		add_meta_box(
 			'mailchimp-campaign-edit',
-			'MailChimp Campaign',
+			'MailChimp Campaign Editor',
 			array( $this, 'render_meta_box' ),
 			$this->post_type,
 			'advanced'
@@ -31,15 +31,7 @@ class CampaignEdit extends MCMetaBox {
 	public function render_meta_box() {
 		$post = get_post();
 		$settings = get_option( 'mailchimp_settings' );
-
-		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
-		if ( ! empty( $cid ) ) {
-			$existing_campaign = $this->api->campaigns->getList( array( 'campaign_id' => $cid ) );
-			if ( isset( $existing_campaign['data'][0] ) ) {
-				$existing = $existing_campaign['data'][0];
-			}
-		}
-
+		$existing = mailchimp_tools_get_existing_campaign_data_for_post( $post );
 		$lists = $this->api->lists->getList();
 		$segments = array();
 
@@ -161,11 +153,10 @@ class CampaignEdit extends MCMetaBox {
 		$html = apply_filters( 'the_content', $post->post_content );
 
 		$campaign_content = array(
-			'html' => $html,
 			'text' => wp_strip_all_tags($html),
 			'sections' => array(
 				'body' => $html,
-				'header' => '<h1>' . $post->post_title . '</h1>'
+				'header' => $post->post_title
 			)
 		);
 

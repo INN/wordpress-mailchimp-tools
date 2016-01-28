@@ -28,9 +28,13 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 	 *
 	 * @since 0.0.1
 	 */
-	function mailchimp_tools_register_for_post_type($post_type='post') {
+	function mailchimp_tools_register_for_post_type($post_type='post', $options=array()) {
 		new CampaignEdit( $post_type );
-		new MailChimpPostTypeSettings( $post_type );
+		new PostTypeSettings( $post_type );
+
+		if ( isset( $options['preview'] ) && $options['preview'] ) {
+			new CampaignPreview( $post_type, $options );
+		}
 	}
 }
 
@@ -45,6 +49,62 @@ if ( ! function_exists( 'mailchimp_tools_admin_init_settings' ) ) {
 	}
 	add_action( 'init', 'mailchimp_tools_admin_init_settings' );
 }
+
+if ( ! function_exists( 'mailchimp_tools_get_existing_campaign_for_post' ) ) {
+	/**
+	 * See if the post has a Campaign ID stored and try retrieving Campaign data from MailChimp
+	 *
+	 * @since 0.0.1
+	 */
+	function mailchimp_tools_get_existing_campaign_data_for_post($post=null) {
+		$post = get_post($post);
+		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
+		if ( ! empty( $cid ) ) {
+			$transient_key = 'mailchimp_tools_campaign_' . $cid;
+			$cached = get_transient( $transient_key );
+			if ( $cached !== false ) {
+				return $cached;
+			}
+
+			$api = mailchimp_tools_get_api_handle();
+			$existing_campaign = $api->campaigns->getList( array( 'campaign_id' => $cid ) );
+			if ( isset( $existing_campaign['data'][0] ) ) {
+				$ret = $existing_campaign['data'][0];
+				set_transient( $transient_key, $ret, 60 );
+				return $ret;
+			}
+		}
+		return null;
+	}
+}
+
+if ( ! function_exists( 'mailchimp_tools_get_template_source' ) ) {
+	/**
+	 * Get source code for a MailChimp template_id
+	 *
+	 * @since 0.0.1
+	 */
+	function mailchimp_tools_get_template_source($template_id=null) {
+		if ( ! empty( $template_id ) ) {
+			$transient_key = 'mailchimp_tools_template_source_' . $template_id;
+			$cached = get_transient( $transient_key );
+			if ( $cached !== false ) {
+				return $cached;
+			}
+
+			$api = mailchimp_tools_get_api_handle();
+			$template_details = $api->templates->info( $template_id );
+			$ret = $template_details['source'];
+			set_transient( $transient_key, $ret, ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? 60 : 60*60 );
+			return $ret;
+		}
+		return null;
+	}
+}
+
+/*
+ * Other non-pluggable functions
+ */
 
 /**
  * Return a configured MailChimp API object

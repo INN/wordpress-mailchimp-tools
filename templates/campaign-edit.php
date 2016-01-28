@@ -14,12 +14,9 @@
 			<?php if ( ! empty( $existing ) ) { ?>
 				<li><input type="radio" name="mailchimp[type]" checked readonly class="disabled"
 					value="<?php echo $existing['type']; ?>"><?php echo ( $existing['type'] == 'regular' ) ? 'Regular' : 'Text-only'; ?></input></li>
-			<?php } else if ( ! empty( $saved_settings['type'] ) ) { ?>
-				<input type="radio" name="mailchimp[type]" checked readonly class="disabled"
-					value="<?php echo $saved_settings['type']; ?>"><?php echo ( $saved_settings['type'] == 'regular' ) ? 'Regular' : 'Text-only'; ?></input></li>
 			<?php } else { ?>
-				<li><input type="radio" name="mailchimp[type]" value="regular">Regular</input></li>
-				<li><input type="radio" name="mailchimp[type]" value="plaintext">Text-only</input></li>
+				<li><input type="radio" name="mailchimp[type]" <?php checked( $saved_settings['type'], 'regular' ); ?> value="regular">Regular</input></li>
+				<li><input type="radio" name="mailchimp[type]" <?php checked( $saved_settings['type'], 'plaintext' ); ?> value="plaintext">Text-only</input></li>
 			<?php } ?>
 		</ul>
 
@@ -66,7 +63,9 @@
 			<h3>Choose a template:</h3>
 			<select name="mailchimp[template_id]">
 				<?php foreach ( $templates['user'] as $key => $template ) { ?>
-					<option value="<?php echo $template['id']; ?>" <?php selected( $existing['template_id'], $template['id'] ); ?> /><?php echo $template['name']; ?></option>
+					<option value="<?php echo $template['id']; ?>"
+						<?php selected( $saved_settings['template_id'], $template['id'] ); ?>
+						<?php selected( $existing['template_id'], $template['id'] ); ?> /><?php echo $template['name']; ?></option>
 				<?php } ?>
 			</select>
 		</div>

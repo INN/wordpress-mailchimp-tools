@@ -5,7 +5,7 @@
  * @package MailChimp Tools
  * @since 0.0.1
  */
-class MailChimpPostTypeSettings {
+class PostTypeSettings {
 
 	/**
 	 * TODO: Ability to set default values for:

@@ -26,3 +26,8 @@
   width:100%;
   max-width:500px;
 }
+
+.mailchimp-tools-campaign-preview {
+  max-width: 100%;
+  border: 1px solid #ddd;
+}
