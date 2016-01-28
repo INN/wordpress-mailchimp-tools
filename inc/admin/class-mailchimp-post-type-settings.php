@@ -1,6 +1,6 @@
 <?php
 /**
- * TKTK.
+ * MailChimp per-post-type campaign settings
  *
  * @package MailChimp Tools
  * @since 0.0.1
@@ -73,6 +73,15 @@ class MailChimpPostTypeSettings {
 	}
 
 	public function process_form($data=array()) {
+		if ( isset( $_POST['reset'] ) ) {
+			delete_option( $this->settings_key );
+			return;
+		}
+
+		if ( ! isset( $_POST['save'] ) ) {
+			return;
+		}
+
 		if ( trim( $data['template_id'] ) == '' ) {
 			unset( $data['template_id'] );
 		}
@@ -84,8 +93,10 @@ class MailChimpPostTypeSettings {
 
 	public function enqueue_assets() {
 		$screen = get_current_screen();
-		if ( $screen->post_type == $this->post_type && $screen->base !== 'post' ) {
+		$result = preg_match( '/^\w+_page_\w+_mailchimp_settings$/', $screen->base );
+		if ( $result ) {
 			wp_enqueue_script( 'mailchimp-tools-campaign-common' );
+			wp_enqueue_style( 'mailchimp-tools-admin' );
 		}
 	}
 }

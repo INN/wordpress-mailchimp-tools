@@ -1,6 +1,6 @@
 <?php
 /**
- * TKTK.
+ * MailChimp Campaign editor meta box
  *
  * @package MailChimp Tools
  * @since 0.0.1
@@ -19,19 +19,13 @@ class CampaignEdit extends MCMetaBox {
 	 */
 
 	public function add_meta_box() {
-		if ( ! is_array( $this->post_type ) ) {
-			$this->post_type = (array) $this->post_type;
-		}
-
-		foreach ( $this->post_type as $post_type ) {
-			add_meta_box(
-				'mailchimp-campaign-edit',
-				'MailChimp Campaign',
-				array( $this, 'render_meta_box' ),
-				$post_type,
-				'advanced'
-			);
-		}
+		add_meta_box(
+			'mailchimp-campaign-edit',
+			'MailChimp Campaign',
+			array( $this, 'render_meta_box' ),
+			$this->post_type,
+			'advanced'
+		);
 	}
 
 	public function render_meta_box() {
@@ -60,6 +54,10 @@ class CampaignEdit extends MCMetaBox {
 		$mc_api_key_parts = explode( '-', $settings['mailchimp_api_key'] );
 		$mc_api_endpoint = $mc_api_key_parts[1];
 
+		$post_type_obj = get_post_type_object( $this->post_type );
+		$settings_key = $post_type_obj->name . '_mailchimp_settings';
+		$saved_settings = get_option( $settings_key, false );
+
 		$context = array(
 			'lists' => $lists,
 			'segments' => $segments,
@@ -72,7 +70,8 @@ class CampaignEdit extends MCMetaBox {
 			),
 			'existing' => $existing,
 			'mc_api_endpoint' => $mc_api_endpoint,
-			'web_id' => $web_id
+			'web_id' => $web_id,
+			'saved_settings' => $saved_settings
 		);
 		mailchimp_tools_render_template( 'campaign-edit.php', $context );
 	}
@@ -184,7 +183,7 @@ class CampaignEdit extends MCMetaBox {
 		);
 
 		$screen = get_current_screen();
-		if ( in_array( $screen->post_type, $this->post_type ) && $screen->base == 'post' ) {
+		if ( $screen->post_type == $this->post_type && $screen->base == 'post' ) {
 			wp_enqueue_script('mailchimp-tools-campaign-edit');
 		}
 	}

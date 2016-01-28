@@ -34,7 +34,6 @@
 		<?php } ?>
 		</ul>
 
-
 		<div id="mailchimp-tools-template" <?php if ( ! empty( $saved_settings ) && $saved_settings['type'] == 'plaintext' ) { ?>style="display: none;"<?php } ?>>
 			<h3>Default template:</h3>
 			<select name="<?php echo $settings_key; ?>[template_id]">
@@ -46,6 +45,9 @@
 			</select>
 		</div>
 
-		<?php submit_button('Save settings', 'primary'); ?>
+		<p class="submit">
+			<?php submit_button( 'Save', 'primary', 'save', false ); ?>
+			<?php submit_button( 'Reset', 'delete',  'reset', false ); ?>
+		</p>
 	</form>
 </div>

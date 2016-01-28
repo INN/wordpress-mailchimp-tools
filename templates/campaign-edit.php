@@ -11,12 +11,15 @@
 		<h3>Choose a campaign type:</h3>
 
 		<ul>
-			<?php if ( empty( $existing ) ) { ?>
+			<?php if ( ! empty( $existing ) ) { ?>
+				<li><input type="radio" name="mailchimp[type]" checked readonly class="disabled"
+					value="<?php echo $existing['type']; ?>"><?php echo ( $existing['type'] == 'regular' ) ? 'Regular' : 'Text-only'; ?></input></li>
+			<?php } else if ( ! empty( $saved_settings['type'] ) ) { ?>
+				<input type="radio" name="mailchimp[type]" checked readonly class="disabled"
+					value="<?php echo $saved_settings['type']; ?>"><?php echo ( $saved_settings['type'] == 'regular' ) ? 'Regular' : 'Text-only'; ?></input></li>
+			<?php } else { ?>
 				<li><input type="radio" name="mailchimp[type]" value="regular">Regular</input></li>
 				<li><input type="radio" name="mailchimp[type]" value="plaintext">Text-only</input></li>
-			<?php } else { ?>
-				<li><input type="radio" name="mailchimp[type]" checked readonly class="disabled"
-						value="<?php echo $existing['type']; ?>"><?php echo ( $existing['type'] == 'regular' ) ? 'Regular' : 'Text-only'; ?></input></li>
 			<?php } ?>
 		</ul>
 
@@ -25,12 +28,25 @@
 		<ul>
 		<?php foreach ( $lists['data'] as $key => $list ) { ?>
 			<li class="list">
-				<input type="radio" name="mailchimp[list_id]" value="<?php echo $list['id']; ?>" <?php checked( $existing['list_id'], $list['id'] ); ?>><?php echo $list['name']; ?></input>
+				<?php if ( ! empty( $existing ) ) { ?>
+					<input type="radio" name="mailchimp[list_id]" value="<?php echo $list['id']; ?>" <?php checked( $existing['list_id'], $list['id'] ); ?>><?php echo $list['name']; ?></input>
+				<?php } else if ( ! empty( $saved_settings['list_id'] ) ) { ?>
+					<input type="radio" name="mailchimp[list_id]" value="<?php echo $list['id']; ?>" <?php checked( $saved_settings['list_id'], $list['id'] ); ?>><?php echo $list['name']; ?></input>
+				<?php } else { ?>
+					<input type="radio" name="mailchimp[list_id]" value="<?php echo $list['id']; ?>" <?php checked( $existing['list_id'], $list['id'] ); ?>><?php echo $list['name']; ?></input>
+				<?php } ?>
+
 				<?php if ( isset( $segments[$list['id']] ) ) { ?>
 					<h4>Saved segments:</h4>
 					<ul class="segment-list">
 					<?php foreach ( $segments[$list['id']] as $segment ) { ?>
-						<li class="segment"><input type="radio" name="mailchimp[segment][saved_segment_id]" value="<?php echo $segment['id']; ?>" <?php checked( $existing['saved_segment']['id'], $segment['id'] ); ?>><?php echo $segment['name']; ?></input></li>
+						<?php if ( ! empty( $existing ) ) { ?>
+							<li class="segment"><input type="radio" name="mailchimp[segment][saved_segment_id]" value="<?php echo $segment['id']; ?>" <?php checked( $existing['saved_segment']['id'], $segment['id'] ); ?>><?php echo $segment['name']; ?></input></li>
+						<?php } else if ( ! empty( $saved_settings['segment'] ) ) { ?>
+							<li class="segment"><input type="radio" name="mailchimp[segment][saved_segment_id]" value="<?php echo $segment['id']; ?>" <?php checked( $saved_settings['segment']['saved_segment_id'], $segment['id'] ); ?>><?php echo $segment['name']; ?></input></li>
+						<?php } else { ?>
+							<li class="segment"><input type="radio" name="mailchimp[segment][saved_segment_id]" value="<?php echo $segment['id']; ?>"><?php echo $segment['name']; ?></input></li>
+						<?php } ?>
 					<?php } ?>
 					</ul>
 				<?php } ?>
@@ -46,7 +62,7 @@
 			<input type="text" name="mailchimp[subject]" placeholder="Campaign email subject line (subscribers will see this)" <?php if ( $existing['subject'] ) { ?>value="<?php echo $existing['subject']; ?>"<?php } ?>></input>
 		</label>
 
-		<div id="mailchimp-tools-template" <?php if ( ! empty( $existing ) && $existing['type'] == 'plaintext' ) { ?>style="display: none;"<?php } ?>>
+		<div id="mailchimp-tools-template" <?php if ( ! empty( $existing ) && $existing['type'] == 'plaintext' || ! empty( $saved_settings['type'] ) && $saved_settings['type'] == 'plaintext' ) { ?>style="display: none;"<?php } ?>>
 			<h3>Choose a template:</h3>
 			<select name="mailchimp[template_id]">
 				<?php foreach ( $templates['user'] as $key => $template ) { ?>
