@@ -76,32 +76,55 @@ class CampaignEdit extends MCMetaBox {
 		mailchimp_tools_render_template( 'campaign-edit.php', $context );
 	}
 
-	public function process_form() {
+	public function process_form($post_id=null, $post=null) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		if ( false !== wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
 		if ( isset( $_POST ) && isset( $_POST['mailchimp'] ) ) {
 			$data = $_POST['mailchimp'];
 
+			if ( ! isset( $data['draft'] ) && ! isset( $data['send'] ) ) {
+				return;
+			}
+
 			if ( isset( $data['send'] ) ) {
-				$this->send_campaign( $data );
+				$this->send_campaign( $data, $post );
 			}
 
 			if ( isset( $data['draft'] ) ) {
-				$this->create_or_update_campaign( $data );
+				$this->create_or_update_campaign( $data, $post );
 			}
 		}
 	}
 
-	public function send_campaign($data) {
-		$this->create_or_update_campaign( $data );
-
-		$post = get_post();
+	public function send_campaign($data, $post=null) {
+		if ( empty( $post ) ) {
+			$post = get_post();
+		}
+		$this->create_or_update_campaign( $data, $post );
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
 		if ( ! empty( $cid ) ) {
 			$this->api->campaigns->send( $cid );
 		}
 	}
 
-	public function create_or_update_campaign($data) {
-		$post = get_post();
+	public function create_or_update_campaign($data, $post=null) {
+		if ( empty($post) ) {
+			$post = get_post();
+		}
 
 		// Remove submit button value from $data
 		foreach ( array( 'send', 'draft' ) as $submit_val ) {

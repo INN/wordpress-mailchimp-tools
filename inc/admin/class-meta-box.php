@@ -12,7 +12,7 @@ class MCMetaBox {
 
 		add_action( 'admin_menu', array( $this, 'add_meta_box' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-		add_action( 'save_post', array( $this, 'process_form' ) );
+		add_action( 'save_post_' . $this->post_type, array( $this, 'process_form' ), 9999, 2 );
 	}
 
 	public function add_meta_box() {
@@ -21,7 +21,7 @@ class MCMetaBox {
 		}
 	}
 
-	public function process_form() {
+	public function process_form($post_id=null, $post=null) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			error_log( 'The `process_form` method is not implemented.' );
 		}
