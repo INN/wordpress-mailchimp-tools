@@ -43,7 +43,7 @@ You can add the tools via [Composer](https://getcomposer.org/):
 
 ## Templates
 
-The campaign editor relies on an `mc:edit="body` [editable content area](http://kb.mailchimp.com/templates/code/create-editable-content-areas-with-mailchimps-template-language) specified in whatever template you use.
+The campaign editor relies on an `mc:edit="body"` [editable content area](http://kb.mailchimp.com/templates/code/create-editable-content-areas-with-mailchimps-template-language) specified in whatever template you use.
 
 When creating or updating a campaign, the tools will add the WordPress post's body to the element of your template that has the `mc:edit="body"` attribute.
 
