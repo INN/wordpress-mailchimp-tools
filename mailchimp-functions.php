@@ -78,11 +78,13 @@ if ( ! function_exists( 'mailchimp_tools_get_existing_campaign_for_post' ) ) {
 			}
 
 			$api = mailchimp_tools_get_api_handle();
-			$existing_campaign = $api->campaigns->getList( array( 'campaign_id' => $cid ) );
-			if ( isset( $existing_campaign['data'][0] ) ) {
-				$ret = $existing_campaign['data'][0];
-				set_transient( $transient_key, $ret, 60 );
-				return $ret;
+			if ( ! empty( $api ) ) {
+				$existing_campaign = $api->campaigns->getList( array( 'campaign_id' => $cid ) );
+				if ( isset( $existing_campaign['data'][0] ) ) {
+					$ret = $existing_campaign['data'][0];
+					set_transient( $transient_key, $ret, 60 );
+					return $ret;
+				}
 			}
 		}
 		return null;
@@ -104,10 +106,12 @@ if ( ! function_exists( 'mailchimp_tools_get_template_source' ) ) {
 			}
 
 			$api = mailchimp_tools_get_api_handle();
-			$template_details = $api->templates->info( $template_id );
-			$ret = $template_details['source'];
-			set_transient( $transient_key, $ret, ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? 60 : 60*60 );
-			return $ret;
+			if ( ! empty( $api ) ) {
+				$template_details = $api->templates->info( $template_id );
+				$ret = $template_details['source'];
+				set_transient( $transient_key, $ret, ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? 60 : 60*60 );
+				return $ret;
+			}
 		}
 		return null;
 	}
@@ -127,6 +131,10 @@ function mailchimp_tools_get_api_handle($args=array()) {
 
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		$args = wp_parse_args( $args, array( 'debug' => true ) );
+	}
+
+	if ( isset( $settings['mailchimp_api_key'] ) ) {
+		return false;
 	}
 
 	return new Mailchimp( $settings['mailchimp_api_key'], $args );
