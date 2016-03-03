@@ -29,6 +29,12 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 	 * @since 0.0.1
 	 */
 	function mailchimp_tools_register_for_post_type($post_type='post', $options=array()) {
+		$settings = get_option( 'mailchimp_settings' );
+
+		if ( empty( $settings['mailchimp_api_key'] ) ) {
+			return false;
+		}
+
 		$options = wp_parse_args($options, array(
 			'preview' => true,
 			'editor' => true,
