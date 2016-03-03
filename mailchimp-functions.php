@@ -139,7 +139,7 @@ function mailchimp_tools_get_api_handle($args=array()) {
 		$args = wp_parse_args( $args, array( 'debug' => true ) );
 	}
 
-	if ( isset( $settings['mailchimp_api_key'] ) ) {
+	if ( empty( $settings['mailchimp_api_key'] ) ) {
 		return false;
 	}
 
