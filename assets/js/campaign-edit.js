@@ -50,4 +50,14 @@
       return false;
     }
   });
+
+  $('#mailchimp-use-post-title-for-campaign-subject').click(function() {
+    container.find('input[name="mailchimp[subject]"]').val($('#title').val());
+    return false;
+  });
+
+  $('#mailchimp-use-post-title-for-campaign-title').click(function() {
+    container.find('input[name="mailchimp[title]"]').val($('#title').val());
+    return false;
+  });
 })();

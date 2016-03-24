@@ -53,10 +53,12 @@
 
 		<h3>Campaign details:</h3>
 		<label for="name"><p>Campaign title:</p>
-		<input type="text" name="mailchimp[title]" placeholder="Campaign title (for internal use)" <?php if ( $existing['title'] ) { ?>value="<?php echo $existing['title']; ?>"<?php } ?>></input>
+		<input type="text" name="mailchimp[title]" placeholder="Campaign title (for internal use)" <?php if ( $existing['title'] ) { ?>value="<?php echo $existing['title']; ?>"<?php } ?>></input><br />
+			<a href="#" id="mailchimp-use-post-title-for-campaign-title">Use post title as campaign title</a>
 		</label>
 		<label for="subject"><p>Campaign subject:</p>
-			<input type="text" name="mailchimp[subject]" placeholder="Campaign email subject line (subscribers will see this)" <?php if ( $existing['subject'] ) { ?>value="<?php echo $existing['subject']; ?>"<?php } ?>></input>
+			<input type="text" name="mailchimp[subject]" placeholder="Campaign email subject line (subscribers will see this)" <?php if ( $existing['subject'] ) { ?>value="<?php echo $existing['subject']; ?>"<?php } ?>></input><br />
+			<a href="#" id="mailchimp-use-post-title-for-campaign-subject">Use post title as campaign subject</a>
 		</label>
 
 		<div id="mailchimp-tools-template" <?php if ( ! empty( $existing ) && $existing['type'] == 'plaintext' || ! empty( $saved_settings['type'] ) && $saved_settings['type'] == 'plaintext' ) { ?>style="display: none;"<?php } ?>>
