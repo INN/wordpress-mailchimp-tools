@@ -24,6 +24,11 @@ class CampaignPreview extends MCMetaBox {
 			return false;
 		}
 
+		$existing = mailchimp_tools_get_existing_campaign_data_for_post( get_post( $_GET['post'] ) );
+		if ( ! $existing ) {
+			return false;
+		}
+
 		parent::add_meta_box();
 	}
 
@@ -65,7 +70,7 @@ class CampaignPreview extends MCMetaBox {
 		} else if ( $existing['type'] == 'regular' ) {
 			$template_source = mailchimp_tools_get_template_source( $existing['template_id'] );
 			$doc = new DOMDocument();
-			$doc->loadHTML( '<?xml encoding="UTF-8">' . $template_source );
+			@$doc->loadHTML( '<?xml encoding="UTF-8">' . $template_source );
 
 			foreach ( $doc->getElementsByTagName('*') as $element ) {
 				if ( $element->getAttribute( 'mc:edit' ) == 'body' ) {
