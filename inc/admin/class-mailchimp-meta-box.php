@@ -20,13 +20,15 @@ class MCMetaBox {
 	}
 
 	public function add_meta_box() {
-		add_meta_box(
-			$this->id,
-			$this->label,
-			array( $this, 'render_meta_box' ),
-			$this->post_type,
-			$this->location
-		);
+		if ( apply_filters( 'mailchimp_tools_render_meta_box', true, $this ) ) {
+			add_meta_box(
+				$this->id,
+				$this->label,
+				array( $this, 'render_meta_box' ),
+				$this->post_type,
+				$this->location
+			);
+		}
 	}
 
 	public function process_form($post_id=null, $post=null) {
