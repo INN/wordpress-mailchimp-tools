@@ -17,6 +17,17 @@ class CampaignPreview extends MCMetaBox {
 		parent::__construct($post_type);
 		add_action( 'wp_loaded', array( $this, 'bless_query_var' ) );
 		add_action( 'template_redirect', array( $this, 'render_preview_page' ) );
+		add_filter( 'preview_post_link', array( $this, 'preview_link' ) );
+	}
+
+	public function preview_link($link) {
+		$existing = mailchimp_tools_get_existing_campaign_data_for_post( get_post( $_GET['post'] ) );
+		if ( ! $existing ) {
+			return $link;
+		} else {
+			global $post;
+			return get_bloginfo('url'). '?campaign_preview=true&post_id=' . esc_attr( $post->ID );
+		}
 	}
 
 	public function add_meta_box() {
@@ -61,7 +72,8 @@ class CampaignPreview extends MCMetaBox {
 		}
 
 		$post = get_post( $_GET['post_id'] );
-		//$post = wp_get_post_revision( $post );
+		setup_postdata( $post );
+
 		$existing = mailchimp_tools_get_existing_campaign_data_for_post( $post );
 		$html = apply_filters( 'the_content', $post->post_content );
 
@@ -88,6 +100,8 @@ class CampaignPreview extends MCMetaBox {
 			}
 			echo $doc->saveHTML();
 		}
+
+		wp_reset_postdata();
 		die();
 	}
 
