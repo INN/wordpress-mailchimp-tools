@@ -8,7 +8,7 @@
 		return false;
 	};
 
-	$(document).on('heartbeat-tick.autosave', refresh_preview);
+	//$(document).on('heartbeat-tick.autosave', refresh_preview);
 
 	$(document).ready(function() {
 		$('a.mailchimp-refresh-preview').click(refresh_preview);
