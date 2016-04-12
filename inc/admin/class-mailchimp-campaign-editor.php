@@ -23,14 +23,23 @@ class CampaignEditor extends MCMetaBox {
 	public function render_meta_box() {
 		$post = get_post();
 		$settings = get_option( 'mailchimp_settings' );
-		$existing = mailchimp_tools_get_existing_campaign_data_for_post( $post );
+		$existing = mailchimp_tools_get_existing_campaign_data_for_post( $post, false );
 		$lists = $this->api->lists->getList();
 		$segments = array();
+		$groups = array();
 
 		foreach ( $lists['data'] as $list ) {
 			$list_segments = $this->api->lists->segments( $list['id'] );
 			if ( ! empty( $list_segments['saved'] ) ) {
 				$segments[$list['id']] = $list_segments['saved'];
+			}
+			try {
+				$list_groups = $this->api->lists->interestGroupings( $list['id'] );
+				if ( ! empty( $list_groups ) ) {
+					$groups[$list['id']] = $list_groups;
+				}
+			} catch ( Mailchimp_List_InvalidOption $e ) {
+				continue;
 			}
 		}
 
@@ -42,9 +51,45 @@ class CampaignEditor extends MCMetaBox {
 		$settings_key = $post_type_obj->name . '_mailchimp_settings';
 		$saved_settings = get_option( $settings_key, false );
 
+		/**
+		 * Try to get existing group and subgroup data.
+		 *
+		 * Do this here instead of in the campaign-edit.php template
+		 * because it's fairly complex to parse the necessary info
+		 * from $existing data.
+		 */
+		if ( ! empty( $existing['segment_opts'] ) ) {
+			$existing_seg_opts = $existing['segment_opts'];
+
+			if ( isset( $existing_seg_opts['conditions'] ) ) {
+				$conditions = $existing_seg_opts['conditions'][0];
+
+				$saved_group_id = str_replace( 'interests-', '', $conditions['field'] );
+				$saved_subgroup_bit = $conditions['value'][0];
+
+				$saved_group_settings = array(
+					'group' => array(
+						'saved_group_id' => $saved_group_id,
+					),
+					'subgroup' => array(
+						'saved_subgroup_bit' => $saved_subgroup_bit
+					)
+				);
+
+				/**
+				 * Use existing values for groups and subgroups if they were preset in $existing data
+				 */
+				if ( isset( $saved_settings['segment'] ) ) {
+					unset( $saved_settings['segment'] );
+				}
+				$saved_settings = wp_parse_args( $saved_group_settings, $saved_settings );
+			}
+		}
+
 		$context = array(
 			'lists' => $lists,
 			'segments' => $segments,
+			'groups' => $groups,
 			'templates' => $this->api->templates->getList(
 				array(
 					'gallery' => false,
@@ -55,7 +100,7 @@ class CampaignEditor extends MCMetaBox {
 			'existing' => $existing,
 			'mc_api_endpoint' => $mc_api_endpoint,
 			'web_id' => $web_id,
-			'saved_settings' => $saved_settings
+			'saved_settings' => $saved_settings,
 		);
 		mailchimp_tools_render_template( 'campaign-edit.php', $context );
 	}
@@ -141,8 +186,30 @@ class CampaignEditor extends MCMetaBox {
 		}
 
 		// Stash segment options if present and unset
-		$segment_options = ( isset( $data['segment'] ) ) ? $data['segment'] : null;
-		unset( $data['segment'] );
+		$segment_options = null;
+		if ( isset( $data['segment'] ) ) {
+			$segment_options = $data['segment'];
+			unset( $data['segment'] );
+		}
+
+		// Stash group segment options if present and unset
+		if ( isset( $data['group'] ) && isset( $data['subgroup'] ) ) {
+			$group = $data['group'];
+			$subgroup = $data['subgroup'];
+
+			$segment_options = array(
+				'match' => 'any',
+				'conditions' => array(
+					array(
+						'field' => 'interests-' . $group['saved_group_id'],
+						'op' => 'one',
+						'value' => array( $subgroup['saved_subgroup_bit'] )
+					)
+				)
+			);
+			unset( $data['group'] );
+			unset( $data['subgroup'] );
+		}
 
 		// Grab the list from MC to use its default values for to/from address
 		$list_results = $this->api->lists->getList( array(
@@ -168,6 +235,7 @@ class CampaignEditor extends MCMetaBox {
 		);
 
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
+
 		if ( empty( $cid ) ) {
 			$response = $this->api->campaigns->create(
 				$type,

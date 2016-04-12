@@ -47,17 +47,27 @@ class PostTypeSettings {
 		$this->api = mailchimp_tools_get_api_handle();
 		$lists = $this->api->lists->getList();
 		$segments = array();
+		$groups = array();
 
 		foreach ( $lists['data'] as $list ) {
 			$list_segments = $this->api->lists->segments( $list['id'] );
 			if ( ! empty( $list_segments['saved'] ) ) {
 				$segments[$list['id']] = $list_segments['saved'];
 			}
+			try {
+				$list_groups = $this->api->lists->interestGroupings( $list['id'] );
+				if ( ! empty( $list_groups ) ) {
+					$groups[$list['id']] = $list_groups;
+				}
+			} catch ( Mailchimp_List_InvalidOption $e ) {
+				continue;
+			}
 		}
 
 		$context = array(
 			'lists' => $lists,
 			'segments' => $segments,
+			'groups' => $groups,
 			'templates' => $this->api->templates->getList(
 				array(
 					'gallery' => false,

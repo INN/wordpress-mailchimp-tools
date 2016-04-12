@@ -47,6 +47,29 @@
 					<?php } ?>
 					</ul>
 				<?php } ?>
+
+
+				<?php if ( isset( $groups[$list['id']] ) ) { ?>
+					<h4>Groups:</h4>
+					<ul class="group-list">
+					<?php foreach ( $groups[$list['id']] as $group ) { ?>
+						<li class="group"><input type="radio" <?php checked( $saved_settings['group']['saved_group_id'], $group['id'] ); ?>
+							name="mailchimp[group][saved_group_id]"
+							value="<?php echo $group['id']; ?>"><?php echo $group['name']; ?></input>
+							<?php if ( ! empty( $group['groups'] ) ) { ?>
+							<ul>
+								<?php foreach ( $group['groups'] as $subgroup ) { ?>
+								<li class="subgroup"><input type="radio" <?php checked( $saved_settings['subgroup']['saved_subgroup_bit'], $subgroup['bit'] ); ?>
+									name="mailchimp[subgroup][saved_subgroup_bit]"
+									value="<?php echo $subgroup['bit']; ?>"><?php echo $subgroup['name']; ?></input>
+								</li>
+								<?php } ?>
+							</ul>
+							<?php } ?>
+						</li>
+					<?php } ?>
+					</ul>
+				<?php } ?>
 			</li>
 		<?php } ?>
 		</ul>

@@ -21,7 +21,7 @@ class CampaignPreview extends MCMetaBox {
 	}
 
 	public function preview_link($link) {
-		$existing = mailchimp_tools_get_existing_campaign_data_for_post( get_post( $_GET['post'] ) );
+		$existing = mailchimp_tools_get_existing_campaign_data_for_post( get_post( $_GET['post'] ), false );
 		if ( ! $existing ) {
 			return $link;
 		} else {

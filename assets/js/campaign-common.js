@@ -4,14 +4,29 @@ var MCT = MCT || {};
   var $ = jQuery,
       container = $('.mailchimp-tools');
 
-  container.find('.segment input').on('click', function() {
+  container.find('.segment input, .group input, .subgroup input').on('click', function() {
     var list = $(this).closest('.list');
-    list.find('> input').attr('checked', 'checked');
+    list.find('> input').first().attr('checked', 'checked');
+
+    if ( $(this).parent().hasClass('subgroup') ) {
+      var group = $(this).closest('.group');
+      group.find('> input').first().attr('checked', 'checked');
+    }
+
+    if ( $(this).parent().hasClass('group') ) {
+      var group = $(this).closest('.group');
+      group.find('.subgroup > input').first().attr('checked', 'checked');
+    }
+
+    if ( $(this).parent().hasClass('group') || $(this).parent().hasClass('subgroup') || $(this).parent().hasClass('segment') ) {
+      list.siblings().find('.segment input, .group input').removeAttr('checked');
+    }
   });
 
   container.find('.list > input').on('click', function() {
     var list = $(this).closest('.list');
     list.siblings().find('.segment input').removeAttr('checked');
+    list.siblings().find('.group input').removeAttr('checked');
   });
 
   container.find('input[name*="[type]"]').on('click', function() {

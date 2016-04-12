@@ -73,14 +73,17 @@ if ( ! function_exists( 'mailchimp_tools_get_existing_campaign_for_post' ) ) {
 	 *
 	 * @since 0.0.1
 	 */
-	function mailchimp_tools_get_existing_campaign_data_for_post($post=null) {
+	function mailchimp_tools_get_existing_campaign_data_for_post($post=null, $use_cache=true) {
 		$post = get_post($post);
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
 		if ( ! empty( $cid ) ) {
 			$transient_key = 'mailchimp_tools_campaign_' . $cid;
-			$cached = get_transient( $transient_key );
-			if ( $cached !== false ) {
-				return $cached;
+
+			if ( $use_cache ) {
+				$cached = get_transient( $transient_key );
+				if ( $cached !== false ) {
+					return $cached;
+				}
 			}
 
 			$api = mailchimp_tools_get_api_handle();

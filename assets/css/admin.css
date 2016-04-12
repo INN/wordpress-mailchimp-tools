@@ -18,8 +18,13 @@
   margin: 1em 0 1em 2em;
 }
 
+.mailchimp-tools .group-list,
 .mailchimp-tools .segment-list {
   margin: 0 0 1em 2em;
+}
+
+.mailchimp-tools .group-list li > ul {
+  margin: 1em 0 1em 3em;
 }
 
 .mailchimp-tools input[type="text"] {
