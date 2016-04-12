@@ -2,7 +2,11 @@
 	<h2><?php echo $post_type_obj->labels->singular_name; ?> Campaign Settings</h2>
 	<p>Set default values to use when creating and sending MailChimp campaigns via the <?php echo $post_type_obj->labels->singular_name; ?> editor.</p>
 
+	<?php if ( $post_type_obj->name == 'post' ) { ?>
+	<form method="post" action="<?php echo admin_url( 'edit.php?page=' . $settings_key ); ?>">
+	<?php } else { ?>
 	<form method="post" action="<?php echo admin_url( 'edit.php?post_type=' . $post_type_obj->name . '&page=' . $settings_key ); ?>">
+	<?php } ?>
 
 		<h3>Default campaign type:</h3>
 
