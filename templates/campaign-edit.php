@@ -77,6 +77,30 @@
 			<?php $attrs = ( ! empty( $existing ) && $existing['status'] !== 'save' ) ? array( 'disabled' => 'disabled' ) : null; ?>
 			<?php submit_button('Send now', 'primary', 'mailchimp[send]', false, $attrs); ?>
 			<?php submit_button(( empty( $existing ) ) ? 'Create draft' : 'Update draft', 'large', 'mailchimp[draft]', false, $attrs); ?>
+			<?php if ( ! empty( $existing ) ) { submit_button('Send test', 'large', 'mailchimp[send_test]', false, $attrs); } ?>
+
 		</p>
 	<?php } ?>
 </div>
+
+<script type="text/template" id="mailchimp-tools-modal-tmpl">
+	<div class="mailchimp-tools-modal-header">
+		<div class="mailchimp-tools-modal-close"><span class="close">&#10005;</span></div>
+	</div>
+	<div class="mailchimp-tools-modal-content"><% if (content) { %><%= content %><% } %></div>
+	<div class="mailchimp-tools-modal-actions">
+		<span class="spinner"></span>
+		<% _.each(actions, function(v, k) { %>
+			<a href="#" class="<%= k %> button button-primary"><%= k %></a>
+		<% }); %>
+	</div>
+</script>
+
+<script type="text/template" id="mailchimp-tools-test-emails-tmpl">
+	<div class="mailchimp-tools-test-emails">
+		<h3>Send a test</h3>
+		<p>Send a test to</p>
+		<input type="text" name="mailchimp[test_emails]" id="mailchimp[test_emails]" placeholder="Ex: freddie@mailchimp.com, mannie@mandrill.com..." />
+		<small>Comma separate emails to send to multiple accounts.</small>
+	</div>
+</script>

@@ -80,8 +80,12 @@ class CampaignEditor extends MCMetaBox {
 		if ( isset( $_POST ) && isset( $_POST['mailchimp'] ) ) {
 			$data = $_POST['mailchimp'];
 
-			if ( ! isset( $data['draft'] ) && ! isset( $data['send'] ) ) {
+			if ( ! isset( $data['draft'] ) && ! isset( $data['send'] ) && ! isset( $data['send_test'] ) ) {
 				return;
+			}
+
+			if ( isset( $data['send_test'] ) ) {
+				$this->send_test( $data, $post );
 			}
 
 			if ( isset( $data['send'] ) ) {
@@ -91,6 +95,17 @@ class CampaignEditor extends MCMetaBox {
 			if ( isset( $data['draft'] ) ) {
 				$this->create_or_update_campaign( $data, $post );
 			}
+		}
+	}
+
+	public function send_test($data, $post=null) {
+		if ( empty( $post ) ) {
+			$post = get_post();
+		}
+		$test_emails = array_map( function($x) { return trim( $x ); }, explode( ',', $data['test_emails'] ) );
+		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
+		if ( ! empty( $cid ) ) {
+			$this->api->campaigns->sendTest( $cid, $test_emails, 'html' );
 		}
 	}
 
@@ -111,7 +126,7 @@ class CampaignEditor extends MCMetaBox {
 		}
 
 		// Remove submit button value from $data
-		foreach ( array( 'send', 'draft' ) as $submit_val ) {
+		foreach ( array( 'send', 'draft', 'send_test' ) as $submit_val ) {
 			if ( isset( $data[$submit_val] ) ) {
 				unset( $data[$submit_val] );
 			}

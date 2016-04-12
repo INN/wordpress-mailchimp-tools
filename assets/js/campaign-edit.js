@@ -60,4 +60,47 @@
     container.find('input[name="mailchimp[title]"]').val($('#title').val());
     return false;
   });
+
+  var CampaignTestModal = MCT.Modal.extend({
+    actions: {
+      'Send': 'send',
+      'Cancel': 'close'
+    },
+
+    render: function() {
+      var tmpl = _.template($('#mailchimp-tools-test-emails-tmpl').html());
+      this.content = tmpl();
+      MCT.Modal.prototype.render.apply(this, arguments);
+      return this;
+    },
+
+    send: function(event) {
+      if ( $(event.currentTarget).hasClass('disabled') ) {
+        return false;
+      }
+      var emails = this.$el.find('input[name="mailchimp[test_emails]"]').val();
+      $('.mailchimp-tools').append('<input type="hidden" name="mailchimp[test_emails]" value="' + emails + '" />');
+      $('input[name="mailchimp[send_test]"]').click();
+      this.$el.find('.mailchimp-tools-modal-actions a').addClass('disabled');
+      this.showSpinner();
+      return false;
+    },
+
+    close: function() {
+      $('input[name="mailchimp[send_test]"]').on('click', open_modal);
+      MCT.Modal.prototype.close.apply(this, arguments);
+      return false;
+    }
+  });
+
+  var modal = new CampaignTestModal();
+
+  var open_modal = function() {
+    modal.render();
+    $('input[name="mailchimp[send_test]"]').off('click', open_modal);
+    return false;
+  };
+
+  $('input[name="mailchimp[send_test]"]').on('click', open_modal);
+
 })();

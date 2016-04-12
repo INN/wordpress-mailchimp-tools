@@ -162,7 +162,7 @@ function mailchimp_tools_register_assets() {
 	wp_register_script(
 		'mailchimp-tools-campaign-common',
 		MAILCHIMP_TOOLS_DIR_URI . '/assets/js/campaign-common.js',
-		array( 'jquery' ),
+		array( 'jquery', 'backbone' ),
 		MAILCHIMP_TOOLS_VER,
 		true
 	);
