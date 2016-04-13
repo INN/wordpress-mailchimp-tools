@@ -61,7 +61,7 @@ class CampaignPreview extends MCMetaBox {
 	 * The endpoint for iframe that displays the campaign preview
 	 */
 	public function render_preview_page() {
-		global $wp_query;
+		global $wp_query, $post;
 
 		if ( ! isset( $wp_query->query_vars['campaign_preview'] ) ) {
 			return false;
