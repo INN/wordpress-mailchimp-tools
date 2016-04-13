@@ -170,6 +170,8 @@ class CampaignEditor extends MCMetaBox {
 			$post = get_post();
 		}
 
+		$data = stripslashes_deep( $data );
+
 		// Remove submit button value from $data
 		foreach ( array( 'send', 'draft', 'send_test' ) as $submit_val ) {
 			if ( isset( $data[$submit_val] ) ) {
