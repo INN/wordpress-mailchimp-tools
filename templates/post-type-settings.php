@@ -71,6 +71,14 @@
 			</select>
 		</div>
 
+		<div id="mailchimp-tools-default-test-emails">
+			<h3>Default email addresses for campaign tests:</h3>
+			<p>A comma-separated list of email addresses that campaign tests should be sent to.</p>
+			<input type="text" name="<?php echo $settings_key; ?>[default_test_emails]"
+				placeholder="Ex: freddie@mailchimp.com, mannie@mandrill.com..."
+				<?php if ( ! empty( $saved_settings['default_test_emails'] ) ) { ?>value="<?php echo $saved_settings['default_test_emails']; ?>"<?php } ?> />
+		</div>
+
 		<p class="submit">
 			<?php submit_button( 'Save', 'primary', 'save', false ); ?>
 			<?php submit_button( 'Reset', 'delete',  'reset', false ); ?>

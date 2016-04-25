@@ -69,7 +69,7 @@
 
     render: function() {
       var tmpl = _.template($('#mailchimp-tools-test-emails-tmpl').html());
-      this.content = tmpl();
+      this.content = tmpl({ default_test_emails: ( typeof default_test_emails == 'undefined' ) ? false : default_test_emails });
       MCT.Modal.prototype.render.apply(this, arguments);
       return this;
     },

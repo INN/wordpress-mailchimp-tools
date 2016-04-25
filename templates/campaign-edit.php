@@ -123,7 +123,17 @@
 	<div class="mailchimp-tools-test-emails">
 		<h3>Send a test</h3>
 		<p>Send a test to</p>
-		<input type="text" name="mailchimp[test_emails]" id="mailchimp[test_emails]" placeholder="Ex: freddie@mailchimp.com, mannie@mandrill.com..." />
+		<input type="text" name="mailchimp[test_emails]" id="mailchimp[test_emails]"
+			placeholder="Ex: freddie@mailchimp.com, mannie@mandrill.com..."
+		<% if (default_test_emails) { %>
+			value="<%= default_test_emails %>"
+		<% } %> />
 		<small>Comma separate emails to send to multiple accounts.</small>
 	</div>
 </script>
+
+<?php if ( ! empty( $saved_settings['default_test_emails'] ) ) { ?>
+<script type="text/javascript">
+	var default_test_emails = "<?php echo $saved_settings['default_test_emails']; ?>";
+</script>
+<?php } ?>
