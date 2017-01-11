@@ -142,7 +142,7 @@ function mailchimp_tools_get_api_handle($args=array()) {
 		return false;
 	}
 
-	return new Mailchimp( $settings['mailchimp_api_key'] );
+	return new \DrewM\MailChimp\Mailchimp( $settings['mailchimp_api_key'] );
 }
 
 /**
