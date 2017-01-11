@@ -38,7 +38,7 @@ class CampaignEditor extends MCMetaBox {
 				if ( ! empty( $list_groups ) ) {
 					$groups[$list['id']] = $list_groups;
 				}
-			} catch ( Mailchimp_List_InvalidOption $e ) {
+			} catch ( MailChimp_List_InvalidOption $e ) {
 				continue;
 			}
 		}
