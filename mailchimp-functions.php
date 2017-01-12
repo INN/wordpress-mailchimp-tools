@@ -14,9 +14,10 @@
  * @since 0.0.1
  */
 if ( ! function_exists( 'mailchimp_tools_render_template' ) ) {
-	function mailchimp_tools_render_template($template, $context=false) {
-		if ( ! empty( $context ) )
+	function mailchimp_tools_render_template( $template, $context = false ) {
+		if ( ! empty( $context ) ) {
 			extract( $context );
+		}
 
 		include MAILCHIMP_TOOLS_TEMPLATE_DIR . '/' . $template;
 	}
@@ -28,7 +29,7 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 	 *
 	 * @since 0.0.1
 	 */
-	function mailchimp_tools_register_for_post_type($post_type='post', $options=array()) {
+	function mailchimp_tools_register_for_post_type( $post_type = 'post', $options = array() ) {
 		$settings = get_option( 'mailchimp_settings' );
 
 		if ( empty( $settings['mailchimp_api_key'] ) ) {
@@ -38,7 +39,7 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 		$options = wp_parse_args($options, array(
 			'preview' => true,
 			'editor' => true,
-			'settings' => true
+			'settings' => true,
 		));
 
 		if ( (bool) $options['editor'] ) {
@@ -69,15 +70,15 @@ if ( ! function_exists( 'mailchimp_tools_get_existing_campaign_for_post' ) ) {
 	 *
 	 * @since 0.0.1
 	 */
-	function mailchimp_tools_get_existing_campaign_data_for_post($post=null, $use_cache=true) {
-		$post = get_post($post);
+	function mailchimp_tools_get_existing_campaign_data_for_post( $post = null, $use_cache = true ) {
+		$post = get_post( $post );
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
 		if ( ! empty( $cid ) ) {
 			$transient_key = 'mailchimp_tools_campaign_' . $cid;
 
 			if ( $use_cache ) {
 				$cached = get_transient( $transient_key );
-				if ( $cached !== false ) {
+				if ( false !== $cached ) {
 					return $cached;
 				}
 			}
@@ -105,7 +106,7 @@ if ( ! function_exists( 'mailchimp_tools_get_existing_campaign_for_post' ) ) {
  *
  * @since 0.0.1
  */
-function mailchimp_tools_get_api_handle($args=array()) {
+function mailchimp_tools_get_api_handle( $args = array() ) {
 	$settings = get_option( 'mailchimp_settings' );
 
 	if ( empty( $settings['mailchimp_api_key'] ) ) {

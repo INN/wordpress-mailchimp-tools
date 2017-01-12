@@ -31,12 +31,12 @@ class CampaignEditor extends MCMetaBox {
 		foreach ( $lists['lists'] as $list ) {
 			$list_segments = $this->api->get( 'lists/' . $list['id'] . '/segments' );
 			if ( ! empty( $list_segments['type'] ) && 'saved' === $list_segments['type'] ) {
-				$segments[$list['id']] = $list_segments;
+				$segments[ $list['id'] ] = $list_segments;
 			}
 			try {
 				$list_groups = $this->api->get( 'lists/' . $list['id'] . '/interest-categories' );
 				if ( ! empty( $list_groups ) ) {
-					$groups[$list['id']] = $list_groups;
+					$groups[ $list['id'] ] = $list_groups;
 				}
 			} catch ( MailChimp_List_InvalidOption $e ) {
 				continue;
@@ -72,8 +72,8 @@ class CampaignEditor extends MCMetaBox {
 						'saved_group_id' => $saved_group_id,
 					),
 					'subgroup' => array(
-						'saved_subgroup_bit' => $saved_subgroup_bit
-					)
+						'saved_subgroup_bit' => $saved_subgroup_bit,
+					),
 				);
 
 				/**
@@ -101,7 +101,7 @@ class CampaignEditor extends MCMetaBox {
 		mailchimp_tools_render_template( 'campaign-edit.php', $context );
 	}
 
-	public function process_form($post_id=null, $post=null) {
+	public function process_form( $post_id = null, $post = null ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
@@ -139,11 +139,16 @@ class CampaignEditor extends MCMetaBox {
 		}
 	}
 
-	public function send_test($data, $post=null) {
+	public function send_test( $data, $post = null ) {
 		if ( empty( $post ) ) {
 			$post = get_post();
 		}
-		$test_emails = array_map( function($x) { return trim( $x ); }, explode( ',', $data['test_emails'] ) );
+		$test_emails = array_map(
+			function( $x ) {
+				return trim( $x );
+			},
+			explode( ',', $data['test_emails'] )
+		);
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
 		if ( ! empty( $cid ) ) {
 			$this->api->post( 'campaigns/' . $cid . '/actions/test', [
@@ -153,7 +158,7 @@ class CampaignEditor extends MCMetaBox {
 		}
 	}
 
-	public function send_campaign($data, $post=null) {
+	public function send_campaign( $data, $post = null ) {
 		if ( empty( $post ) ) {
 			$post = get_post();
 		}
@@ -164,8 +169,8 @@ class CampaignEditor extends MCMetaBox {
 		}
 	}
 
-	public function create_or_update_campaign($data, $post=null) {
-		if ( empty($post) ) {
+	public function create_or_update_campaign( $data, $post = null ) {
+		if ( empty( $post ) ) {
 			$post = get_post();
 		}
 
@@ -173,8 +178,8 @@ class CampaignEditor extends MCMetaBox {
 
 		// Remove submit button value from $data
 		foreach ( array( 'send', 'draft', 'send_test' ) as $submit_val ) {
-			if ( isset( $data[$submit_val] ) ) {
-				unset( $data[$submit_val] );
+			if ( isset( $data[ $submit_val ] ) ) {
+				unset( $data[ $submit_val ] );
 			}
 		}
 
@@ -182,7 +187,7 @@ class CampaignEditor extends MCMetaBox {
 		$type = $data['type'];
 		unset( $data['type'] );
 
-		if ( $type == 'plaintext' ) {
+		if ( 'plaintext' === $type ) {
 			unset( $data['template_id'] );
 		}
 
@@ -204,8 +209,8 @@ class CampaignEditor extends MCMetaBox {
 					'contidition_type' => 'Interests',
 					'field' => 'interests-' . $group['saved_group_id'],
 					'op' => 'one',
-					'value' => array( $subgroup['saved_subgroup_bit'] )
-				)
+					'value' => array( $subgroup['saved_subgroup_bit'] ),
+				),
 			);
 			unset( $data['group'] );
 			unset( $data['subgroup'] );
@@ -217,11 +222,11 @@ class CampaignEditor extends MCMetaBox {
 		$html = apply_filters( 'the_content', $post->post_content );
 
 		$campaign_content = array(
-			'text' => wp_strip_all_tags($html),
+			'text' => wp_strip_all_tags( $html ),
 			'sections' => array(
 				'body' => $html,
-				'header' => $post->post_title
-			)
+				'header' => $post->post_title,
+			),
 		);
 
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
@@ -232,12 +237,12 @@ class CampaignEditor extends MCMetaBox {
 				'recipients' => [
 					'list_id' => $list,
 					'segment_opts' => $segment_options,
-				]
+				],
 				'settings' => [
 					'subject_line' => $post->post_title,
 					'from_name' => $list['default_from_name'],
 					'reply_to' => $list['default_from_email'],
-				]
+				],
 			]);
 
 			update_post_meta( $post->ID, 'mailchimp_web_id', $response['web_id'] );
@@ -252,7 +257,7 @@ class CampaignEditor extends MCMetaBox {
 				'recipients' => [
 					'list_id' => $list,
 					'segment_opts' => $segment_options,
-				]
+				],
 			]);
 		}
 		$content_response = $this->api->put( 'campaigns/' . $response['id'] . '/content', [
@@ -273,8 +278,8 @@ class CampaignEditor extends MCMetaBox {
 		);
 
 		$screen = get_current_screen();
-		if ( $screen->post_type == $this->post_type && $screen->base == 'post' ) {
-			wp_enqueue_script('mailchimp-tools-campaign-edit');
+		if ( $screen->post_type === $this->post_type && 'post' === $screen->base ) {
+			wp_enqueue_script( 'mailchimp-tools-campaign-edit' );
 		}
 	}
 }
