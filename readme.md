@@ -36,8 +36,6 @@ You can add the tools via [Composer](https://getcomposer.org/):
             'public' => true
         ));
 
-        // Pass 'preview' => false to disable the preview meta box
-        mailchimp_tools_register_for_post_type( 'newsletter', array( 'preview' => false ) );
     }
     add_action( 'init', 'my_plugin_init' );
 

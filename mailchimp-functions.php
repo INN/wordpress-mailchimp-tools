@@ -48,10 +48,6 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 		if ( (bool) $options['settings'] ) {
 			new PostTypeSettings( $post_type );
 		}
-
-		if ( (bool) $options['preview'] ) {
-			new CampaignPreview( $post_type );
-		}
 	}
 }
 
@@ -88,38 +84,12 @@ if ( ! function_exists( 'mailchimp_tools_get_existing_campaign_for_post' ) ) {
 
 			$api = mailchimp_tools_get_api_handle();
 			if ( ! empty( $api ) ) {
-				$existing_campaign = $api->campaigns->getList( array( 'campaign_id' => $cid ) );
-				if ( isset( $existing_campaign['data'][0] ) ) {
-					$ret = $existing_campaign['data'][0];
+				$existing_campaign = $api->get( 'campaigns/' . $cid );
+				if ( isset( $existing_campaign['campaigns'][0] ) ) { // @TODO test this offset
+					$ret = $existing_campaign['campaigns'][0];
 					set_transient( $transient_key, $ret, 60 );
 					return $ret;
 				}
-			}
-		}
-		return null;
-	}
-}
-
-if ( ! function_exists( 'mailchimp_tools_get_template_source' ) ) {
-	/**
-	 * Get source code for a MailChimp template_id
-	 *
-	 * @since 0.0.1
-	 */
-	function mailchimp_tools_get_template_source($template_id=null) {
-		if ( ! empty( $template_id ) ) {
-			$transient_key = 'mailchimp_tools_template_source_' . $template_id;
-			$cached = get_transient( $transient_key );
-			if ( $cached !== false ) {
-				return $cached;
-			}
-
-			$api = mailchimp_tools_get_api_handle();
-			if ( ! empty( $api ) ) {
-				$template_details = $api->templates->info( $template_id );
-				$ret = $template_details['source'];
-				set_transient( $transient_key, $ret, ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? 60 : 60*60 );
-				return $ret;
 			}
 		}
 		return null;
