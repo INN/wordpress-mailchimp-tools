@@ -45,17 +45,17 @@ class PostTypeSettings {
 			$this->process_form($_POST[$this->settings_key]);
 		}
 		$this->api = mailchimp_tools_get_api_handle();
-		$lists = $this->api->lists->getList();
+		$lists = $this->api->get( 'lists' );
 		$segments = array();
 		$groups = array();
 
-		foreach ( $lists['data'] as $list ) {
+		foreach ( $lists['lists'] as $list ) {
 			$list_segments = $this->api->lists->segments( $list['id'] );
 			if ( ! empty( $list_segments['saved'] ) ) {
 				$segments[$list['id']] = $list_segments['saved'];
 			}
 			try {
-				$list_groups = $this->api->lists->interestGroupings( $list['id'] );
+				$list_groups = $this->api->get( 'lists/' . $list['id'] . '/segments' );
 				if ( ! empty( $list_groups ) ) {
 					$groups[$list['id']] = $list_groups;
 				}
@@ -68,13 +68,9 @@ class PostTypeSettings {
 			'lists' => $lists,
 			'segments' => $segments,
 			'groups' => $groups,
-			'templates' => $this->api->templates->getList(
-				array(
-					'gallery' => false,
-					'base' => false
-				),
-				array( 'include_drag_and_drop' => true )
-			),
+			'templates' => $this->api->get( 'templates', [
+				'type' => 'user',
+			]),
 			'post_type_obj' => $this->post_type_obj,
 			'settings_key' => $this->settings_key,
 			'saved_settings' => get_option( $this->settings_key, false )
