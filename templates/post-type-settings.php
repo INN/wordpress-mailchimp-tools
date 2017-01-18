@@ -39,16 +39,16 @@
 					<?php if ( isset( $groups[$list['id']] ) ) { ?>
 						<h4>Groups:</h4>
 						<ul class="group-list">
-						<?php foreach ( $groups[$list['id']] as $group ) { ?>
+						<?php foreach ( $groups[$list['id']]['categories'] as $group ) { ?>
 							<li class="group"><input type="radio" <?php checked( $saved_settings['group']['saved_group_id'], $group['id'] ); ?>
 								name="<?php echo $settings_key; ?>[group][saved_group_id]"
-								value="<?php echo $group['id']; ?>"><?php echo $group['name']; ?></input>
-								<?php if ( ! empty( $group['groups'] ) ) { ?>
+								value="<?php echo $group['id']; ?>"><?php echo $group['title']; ?></input>
+								<?php if ( ! empty( $group['interests'] ) ) { ?>
 								<ul>
-									<?php foreach ( $group['groups'] as $subgroup ) { ?>
-									<li class="subgroup"><input type="radio" <?php checked( $saved_settings['subgroup']['saved_subgroup_bit'], $subgroup['bit'] ); ?>
+									<?php foreach ( $group['interests'] as $subgroup ) { ?>
+									<li class="subgroup"><input type="radio" <?php checked( $saved_settings['subgroup']['saved_subgroup_bit'], $subgroup['id'] ); ?>
 										name="<?php echo $settings_key; ?>[subgroup][saved_subgroup_bit]"
-										value="<?php echo $subgroup['bit']; ?>"><?php echo $subgroup['name']; ?></input>
+										value="<?php echo $subgroup['id']; ?>"><?php echo $subgroup['name']; ?></input>
 									</li>
 									<?php } ?>
 								</ul>
@@ -68,7 +68,7 @@
 			<h3>Default template:</h3>
 			<select name="<?php echo $settings_key; ?>[template_id]">
 				<option value="">---</option>
-				<?php foreach ( $templates['user'] as $key => $template ) { ?>
+				<?php foreach ( $templates['templates'] as $key => $template ) { ?>
 					<option <?php selected( $saved_settings['template_id'], $template['id'] ); ?>
 						value="<?php echo $template['id']; ?>" /><?php echo $template['name']; ?></option>
 				<?php } ?>

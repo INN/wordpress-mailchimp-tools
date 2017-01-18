@@ -37,6 +37,12 @@ class CampaignEditor extends MCMetaBox {
 				$list_groups = $this->api->get( 'lists/' . $list['id'] . '/interest-categories' );
 				if ( ! empty( $list_groups ) ) {
 					$groups[ $list['id'] ] = $list_groups;
+					foreach ( $list_groups['categories'] as $key => $interest_group ) {
+						$interest_categories = $this->api->get( 'lists/' . $interest_group['list_id'] . '/interest-categories/' . $interest_group['id'] . '/interests' );
+						if ( ! empty( $interest_categories ) ) {
+							$groups[ $list['id'] ]['categories'][ $key ]['interests'] = $interest_categories['interests']; // @TODO need to work with this to get it assigned to the right location
+						}
+					}
 				}
 			} catch ( MailChimp_List_InvalidOption $e ) {
 				continue;
@@ -206,10 +212,10 @@ class CampaignEditor extends MCMetaBox {
 			$segment_options = array(
 				'match' => 'any',
 				'conditions' => array(
-					'contidition_type' => 'Interests',
+					'condition_type' => 'Interests',
 					'field' => 'interests-' . $group['saved_group_id'],
-					'op' => 'one',
-					'value' => array( $subgroup['saved_subgroup_bit'] ),
+					'op' => 'interestcontains',
+					'value' => $subgroup['saved_subgroup_bit'],
 				),
 			);
 			unset( $data['group'] );
@@ -235,16 +241,16 @@ class CampaignEditor extends MCMetaBox {
 			$response = $this->api->post( 'campaigns', [
 				'type' => $type,
 				'recipients' => [
-					'list_id' => $list,
+					'list_id' => $list['id'],
 					'segment_opts' => $segment_options,
 				],
 				'settings' => [
 					'subject_line' => $post->post_title,
-					'from_name' => $list['default_from_name'],
-					'reply_to' => $list['default_from_email'],
+					'from_name' => $list['campaign_defaults']['from_name'],
+					'reply_to' => $list['campaign_defaults']['from_email'],
 				],
 			]);
-
+echo '<pre>'; var_dump( $response, $segment_options ); echo '</pre>'; exit;
 			update_post_meta( $post->ID, 'mailchimp_web_id', $response['web_id'] );
 			update_post_meta( $post->ID, 'mailchimp_cid', $response['id'] );
 		} else {

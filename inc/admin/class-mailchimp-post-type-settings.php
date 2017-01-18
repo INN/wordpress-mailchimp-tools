@@ -50,14 +50,20 @@ class PostTypeSettings {
 		$groups = array();
 
 		foreach ( $lists['lists'] as $list ) {
-			$list_segments = $this->api->lists->segments( $list['id'] );
+			$list_segments = $this->api->get( 'lists/' . $list['id'] . '/segments' );
 			if ( ! empty( $list_segments['saved'] ) ) {
 				$segments[ $list['id'] ] = $list_segments['saved'];
 			}
 			try {
-				$list_groups = $this->api->get( 'lists/' . $list['id'] . '/segments' );
+				$list_groups = $this->api->get( 'lists/' . $list['id'] . '/interest-categories' );
 				if ( ! empty( $list_groups ) ) {
 					$groups[ $list['id'] ] = $list_groups;
+					foreach ( $list_groups['categories'] as $key => $interest_group ) {
+						$interest_categories = $this->api->get( 'lists/' . $interest_group['list_id'] . '/interest-categories/' . $interest_group['id'] . '/interests' );
+						if ( ! empty( $interest_categories ) ) {
+							$groups[ $list['id'] ]['categories'][$key]['interests'] = $interest_categories['interests']; // @TODO need to work with this to get it assigned to the right location
+						}
+					}
 				}
 			} catch ( MailChimp_List_InvalidOption $e ) {
 				continue;
@@ -75,6 +81,7 @@ class PostTypeSettings {
 			'settings_key' => $this->settings_key,
 			'saved_settings' => get_option( $this->settings_key, false ),
 		);
+
 		mailchimp_tools_render_template( 'post-type-settings.php', $context );
 	}
 
