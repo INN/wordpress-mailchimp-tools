@@ -100,7 +100,7 @@
 			<?php $attrs = ( ! empty( $existing ) && 'save' !== $existing['status'] ) ? array( 'disabled' => 'disabled' ) : null; ?>
 			<?php submit_button( 'Send now', 'primary', 'mailchimp[send]', false, $attrs ); ?>
 			<?php submit_button( ( empty( $existing ) ) ? 'Create draft' : 'Update draft', 'large', 'mailchimp[draft]', false, $attrs ); ?>
-			<?php if ( ! empty( $existing ) ) { submit_button( 'Send test', 'large', 'mailchimp[send_test]', false, $attrs ); } ?>
+			<?php if ( $existing ) { submit_button( 'Send test', 'large', 'mailchimp[send_test]', false, $attrs ); } ?>
 		</p>
 	<?php } // End if(). ?>
 </div>

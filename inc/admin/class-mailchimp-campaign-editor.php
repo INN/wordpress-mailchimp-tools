@@ -212,10 +212,12 @@ class CampaignEditor extends MCMetaBox {
 			$segment_options = array(
 				'match' => 'any',
 				'conditions' => array(
-					'condition_type' => 'Interests',
-					'field' => 'interests-' . $group['saved_group_id'],
-					'op' => 'interestcontains',
-					'value' => $subgroup['saved_subgroup_bit'],
+					array (
+						'condition_type' => 'Interests',
+						'field' => 'interests-' . $group['saved_group_id'],
+						'op' => 'interestcontains',
+						'value' => array( $subgroup['saved_subgroup_bit'] ),
+					),
 				),
 			);
 			unset( $data['group'] );
@@ -250,18 +252,18 @@ class CampaignEditor extends MCMetaBox {
 					'reply_to' => $list['campaign_defaults']['from_email'],
 				],
 			]);
-echo '<pre>'; var_dump( $response, $segment_options ); echo '</pre>'; exit;
+
 			update_post_meta( $post->ID, 'mailchimp_web_id', $response['web_id'] );
 			update_post_meta( $post->ID, 'mailchimp_cid', $response['id'] );
 		} else {
-			$this->api->patch( 'campaigns/' . $cid, [
+			$response = $this->api->patch( 'campaigns/' . $cid, [
 				'settings' => [
 					'subject_line' => $post->post_title,
-					'from_name' => $list['default_from_name'],
-					'reply_to' => $list['default_from_email'],
+					'from_name' => $list['campaign_defaults']['from_name'],
+					'reply_to' => $list['campaign_defaults']['from_email'],
 				],
 				'recipients' => [
-					'list_id' => $list,
+					'list_id' => $list['id'],
 					'segment_opts' => $segment_options,
 				],
 			]);
@@ -269,7 +271,6 @@ echo '<pre>'; var_dump( $response, $segment_options ); echo '</pre>'; exit;
 		$content_response = $this->api->put( 'campaigns/' . $response['id'] . '/content', [
 			'html' => $html,
 		]);
-
 	}
 
 	public function enqueue_assets() {

@@ -73,6 +73,7 @@ if ( ! function_exists( 'mailchimp_tools_get_existing_campaign_for_post' ) ) {
 	function mailchimp_tools_get_existing_campaign_data_for_post( $post = null, $use_cache = true ) {
 		$post = get_post( $post );
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
+
 		if ( ! empty( $cid ) ) {
 			$transient_key = 'mailchimp_tools_campaign_' . $cid;
 
@@ -86,8 +87,8 @@ if ( ! function_exists( 'mailchimp_tools_get_existing_campaign_for_post' ) ) {
 			$api = mailchimp_tools_get_api_handle();
 			if ( ! empty( $api ) ) {
 				$existing_campaign = $api->get( 'campaigns/' . $cid );
-				if ( isset( $existing_campaign['campaigns'][0] ) ) { // @TODO test this offset
-					$ret = $existing_campaign['campaigns'][0];
+				if ( isset( $existing_campaign['id'] ) ) { // @TODO test this offset
+					$ret = $existing_campaign;
 					set_transient( $transient_key, $ret, 60 );
 					return $ret;
 				}
