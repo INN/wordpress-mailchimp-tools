@@ -14,9 +14,10 @@
  * @since 0.0.1
  */
 if ( ! function_exists( 'mailchimp_tools_render_template' ) ) {
-	function mailchimp_tools_render_template($template, $context=false) {
-		if ( ! empty( $context ) )
+	function mailchimp_tools_render_template( $template, $context = false ) {
+		if ( ! empty( $context ) ) {
 			extract( $context );
+		}
 
 		include MAILCHIMP_TOOLS_TEMPLATE_DIR . '/' . $template;
 	}
@@ -28,7 +29,7 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 	 *
 	 * @since 0.0.1
 	 */
-	function mailchimp_tools_register_for_post_type($post_type='post', $options=array()) {
+	function mailchimp_tools_register_for_post_type( $post_type = 'post', $options = array() ) {
 		$settings = get_option( 'mailchimp_settings' );
 
 		if ( empty( $settings['mailchimp_api_key'] ) ) {
@@ -38,7 +39,7 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 		$options = wp_parse_args($options, array(
 			'preview' => true,
 			'editor' => true,
-			'settings' => true
+			'settings' => true,
 		));
 
 		if ( (bool) $options['editor'] ) {
@@ -47,10 +48,6 @@ if ( ! function_exists( 'mailchimp_tools_register_for_post_type' ) ) {
 
 		if ( (bool) $options['settings'] ) {
 			new PostTypeSettings( $post_type );
-		}
-
-		if ( (bool) $options['preview'] ) {
-			new CampaignPreview( $post_type );
 		}
 	}
 }
@@ -73,53 +70,28 @@ if ( ! function_exists( 'mailchimp_tools_get_existing_campaign_for_post' ) ) {
 	 *
 	 * @since 0.0.1
 	 */
-	function mailchimp_tools_get_existing_campaign_data_for_post($post=null, $use_cache=true) {
-		$post = get_post($post);
+	function mailchimp_tools_get_existing_campaign_data_for_post( $post = null, $use_cache = true ) {
+		$post = get_post( $post );
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
+
 		if ( ! empty( $cid ) ) {
 			$transient_key = 'mailchimp_tools_campaign_' . $cid;
 
 			if ( $use_cache ) {
 				$cached = get_transient( $transient_key );
-				if ( $cached !== false ) {
+				if ( false !== $cached ) {
 					return $cached;
 				}
 			}
 
 			$api = mailchimp_tools_get_api_handle();
 			if ( ! empty( $api ) ) {
-				$existing_campaign = $api->campaigns->getList( array( 'campaign_id' => $cid ) );
-				if ( isset( $existing_campaign['data'][0] ) ) {
-					$ret = $existing_campaign['data'][0];
+				$existing_campaign = $api->get( 'campaigns/' . $cid );
+				if ( isset( $existing_campaign['id'] ) ) { // @TODO test this offset
+					$ret = $existing_campaign;
 					set_transient( $transient_key, $ret, 60 );
 					return $ret;
 				}
-			}
-		}
-		return null;
-	}
-}
-
-if ( ! function_exists( 'mailchimp_tools_get_template_source' ) ) {
-	/**
-	 * Get source code for a MailChimp template_id
-	 *
-	 * @since 0.0.1
-	 */
-	function mailchimp_tools_get_template_source($template_id=null) {
-		if ( ! empty( $template_id ) ) {
-			$transient_key = 'mailchimp_tools_template_source_' . $template_id;
-			$cached = get_transient( $transient_key );
-			if ( $cached !== false ) {
-				return $cached;
-			}
-
-			$api = mailchimp_tools_get_api_handle();
-			if ( ! empty( $api ) ) {
-				$template_details = $api->templates->info( $template_id );
-				$ret = $template_details['source'];
-				set_transient( $transient_key, $ret, ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? 60 : 60*60 );
-				return $ret;
 			}
 		}
 		return null;
@@ -135,18 +107,14 @@ if ( ! function_exists( 'mailchimp_tools_get_template_source' ) ) {
  *
  * @since 0.0.1
  */
-function mailchimp_tools_get_api_handle($args=array()) {
+function mailchimp_tools_get_api_handle( $args = array() ) {
 	$settings = get_option( 'mailchimp_settings' );
-
-	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		$args = wp_parse_args( $args, array( 'debug' => true ) );
-	}
 
 	if ( empty( $settings['mailchimp_api_key'] ) ) {
 		return false;
 	}
 
-	return new Mailchimp( $settings['mailchimp_api_key'], $args );
+	return new \DrewM\MailChimp\MailChimp( $settings['mailchimp_api_key'] );
 }
 
 /**

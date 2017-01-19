@@ -58,7 +58,7 @@ class MailChimpSettings {
 		$settings = get_option( 'mailchimp_settings' ); ?>
 		<input style="width: 300px;" type="text" name="mailchimp_settings[mailchimp_api_key]" id="mailchimp_api_key"
 			value="<?php echo $settings['mailchimp_api_key']; ?>"
-			placeholder="Mailchimp API Key" /><?php
+			placeholder="MailChimp API Key" /><?php
 	}
 
 	function render_settings_page() {

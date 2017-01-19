@@ -20,51 +20,55 @@
 		<h3>Default list to send to:</h3>
 
 		<ul>
-		<?php foreach ( $lists['data'] as $key => $list ) { ?>
-			<li class="list">
-				<input type="radio" <?php checked( $saved_settings['list_id'], $list['id'] ); ?>
-					name="<?php echo $settings_key; ?>[list_id]" value="<?php echo $list['id']; ?>"><?php echo $list['name']; ?></input>
-				<?php if ( isset( $segments[$list['id']] ) ) { ?>
-					<h4>Saved segments:</h4>
-					<ul class="segment-list">
-					<?php foreach ( $segments[$list['id']] as $segment ) { ?>
-						<li class="segment"><input type="radio" <?php checked( $saved_settings['segment']['saved_segment_id'], $segment['id'] ); ?>
-							name="<?php echo $settings_key; ?>[segment][saved_segment_id]"
-							value="<?php echo $segment['id']; ?>"><?php echo $segment['name']; ?></input></li>
+		<?php if ( $lists['lists'] ) : ?>
+			<?php foreach ( $lists['lists'] as $key => $list ) { ?>
+				<li class="list">
+					<input type="radio" <?php checked( $saved_settings['list_id'], $list['id'] ); ?>
+						name="<?php echo $settings_key; ?>[list_id]" value="<?php echo $list['id']; ?>"><?php echo $list['name']; ?></input>
+					<?php if ( isset( $segments[$list['id']] ) ) { ?>
+						<h4>Saved segments:</h4>
+						<ul class="segment-list">
+						<?php foreach ( $segments[$list['id']] as $segment ) { ?>
+							<li class="segment"><input type="radio" <?php checked( $saved_settings['segment']['saved_segment_id'], $segment['id'] ); ?>
+								name="<?php echo $settings_key; ?>[segment][saved_segment_id]"
+								value="<?php echo $segment['id']; ?>"><?php echo $segment['name']; ?></input></li>
+						<?php } ?>
+						</ul>
 					<?php } ?>
-					</ul>
-				<?php } ?>
 
-				<?php if ( isset( $groups[$list['id']] ) ) { ?>
-					<h4>Groups:</h4>
-					<ul class="group-list">
-					<?php foreach ( $groups[$list['id']] as $group ) { ?>
-						<li class="group"><input type="radio" <?php checked( $saved_settings['group']['saved_group_id'], $group['id'] ); ?>
-							name="<?php echo $settings_key; ?>[group][saved_group_id]"
-							value="<?php echo $group['id']; ?>"><?php echo $group['name']; ?></input>
-							<?php if ( ! empty( $group['groups'] ) ) { ?>
-							<ul>
-								<?php foreach ( $group['groups'] as $subgroup ) { ?>
-								<li class="subgroup"><input type="radio" <?php checked( $saved_settings['subgroup']['saved_subgroup_bit'], $subgroup['bit'] ); ?>
-									name="<?php echo $settings_key; ?>[subgroup][saved_subgroup_bit]"
-									value="<?php echo $subgroup['bit']; ?>"><?php echo $subgroup['name']; ?></input>
-								</li>
+					<?php if ( isset( $groups[$list['id']] ) ) { ?>
+						<h4>Groups:</h4>
+						<ul class="group-list">
+						<?php foreach ( $groups[$list['id']]['categories'] as $group ) { ?>
+							<li class="group"><input type="radio" <?php checked( $saved_settings['group']['saved_group_id'], $group['id'] ); ?>
+								name="<?php echo $settings_key; ?>[group][saved_group_id]"
+								value="<?php echo $group['id']; ?>"><?php echo $group['title']; ?></input>
+								<?php if ( ! empty( $group['interests'] ) ) { ?>
+								<ul>
+									<?php foreach ( $group['interests'] as $subgroup ) { ?>
+									<li class="subgroup"><input type="radio" <?php checked( $saved_settings['subgroup']['saved_subgroup_bit'], $subgroup['id'] ); ?>
+										name="<?php echo $settings_key; ?>[subgroup][saved_subgroup_bit]"
+										value="<?php echo $subgroup['id']; ?>"><?php echo $subgroup['name']; ?></input>
+									</li>
+									<?php } ?>
+								</ul>
 								<?php } ?>
-							</ul>
-							<?php } ?>
-						</li>
-					<?php } ?>
+							</li>
+						<?php } ?>
 					</ul>
 				<?php } ?>
 			</li>
 		<?php } ?>
+		<?php else : ?>
+			<em>You don't have any lists setup in MailChimp.</em>
+		<?php endif; ?>
 		</ul>
 
 		<div id="mailchimp-tools-template" <?php if ( ! empty( $saved_settings ) && $saved_settings['type'] == 'plaintext' ) { ?>style="display: none;"<?php } ?>>
 			<h3>Default template:</h3>
 			<select name="<?php echo $settings_key; ?>[template_id]">
 				<option value="">---</option>
-				<?php foreach ( $templates['user'] as $key => $template ) { ?>
+				<?php foreach ( $templates['templates'] as $key => $template ) { ?>
 					<option <?php selected( $saved_settings['template_id'], $template['id'] ); ?>
 						value="<?php echo $template['id']; ?>" /><?php echo $template['name']; ?></option>
 				<?php } ?>
