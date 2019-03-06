@@ -2,15 +2,20 @@
 /**
  * The essentials for MailChimp settings panel.
  *
+ * This functions as a static singleton class.
+ *
  * @package MailChimp Tools
  * @since 0.0.1
  */
 
 class MailChimpSettings {
 
+	/**
+	 * @var MailChimpSettings $instance The singleton instance of this class.
+	 */
 	private static $instance;
 
-	function get_instance() {
+	public static function get_instance() {
 		if ( ! isset( self::$instance ) ) {
 			self::$instance = new MailChimpSettings;
 			self::$instance->init();
@@ -19,12 +24,18 @@ class MailChimpSettings {
 		return self::$instance;
 	}
 
-	function init() {
-		add_action( 'admin_menu', array( __CLASS__, 'add_options_page' ) );
-		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
+	/**
+	 * Initialize the class
+	 *
+	 * @uses MailChimpSettings::add_options_page
+	 * @uses MailChimpSettings::register_settings
+	 */
+	public function init() {
+		add_action( 'admin_menu', array( $this, 'add_options_page' ) );
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
 	}
 
-	function add_options_page() {
+	public function add_options_page() {
 		add_options_page(
 			'MailChimp Settings',
 			'MailChimp Settings',
@@ -34,7 +45,7 @@ class MailChimpSettings {
 		);
 	}
 
-	function register_settings() {
+	public function register_settings() {
 		register_setting(
 			'mailchimp_settings',
 			'mailchimp_settings'
@@ -54,14 +65,14 @@ class MailChimpSettings {
 		);
 	}
 
-	function mailchimp_api_key_input() {
+	public function mailchimp_api_key_input() {
 		$settings = get_option( 'mailchimp_settings' ); ?>
 		<input style="width: 300px;" type="text" name="mailchimp_settings[mailchimp_api_key]" id="mailchimp_api_key"
 			value="<?php echo $settings['mailchimp_api_key']; ?>"
 			placeholder="MailChimp API Key" /><?php
 	}
 
-	function render_settings_page() {
+	public function render_settings_page() {
 		mailchimp_tools_render_template( 'settings.php' );
 	}
 }
