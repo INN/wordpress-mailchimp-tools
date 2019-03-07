@@ -14,7 +14,7 @@
   }],
   "require": {
     "php": ">=5.2.0",
-    "drewm/mailchimp-api": "^2.3"
+    "drewm/mailchimp-api": "^2.5"
   },
   "autoload": {
     "classmap": ["inc/"],
