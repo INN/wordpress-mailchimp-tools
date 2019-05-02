@@ -259,6 +259,9 @@ class CampaignEditor extends MCMetaBox {
 
 			update_post_meta( $post->ID, 'mailchimp_web_id', $response['web_id'] );
 			update_post_meta( $post->ID, 'mailchimp_cid', $response['id'] );
+			if ( isset( $response['errors'] ) ) {
+				update_post_meta( $post->ID, 'mailchimp_error', $response['errors'] );
+			}
 		} else {
 			$response = $this->api->patch( 'campaigns/' . $cid, [
 				'settings' => [
