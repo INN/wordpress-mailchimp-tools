@@ -48,6 +48,11 @@ class PostTypeSettings {
 		$lists = $this->api->get( 'lists' );
 		$segments = array();
 		$groups = array();
+		$templates = $this->api->get( 'templates', [
+			'type' => 'user',
+			'count' => 100,
+			'sort_field' => 'name'
+		]);
 
 		foreach ( $lists['lists'] as $list ) {
 			$list_segments = $this->api->get( 'lists/' . $list['id'] . '/segments' );
@@ -74,9 +79,7 @@ class PostTypeSettings {
 			'lists' => $lists,
 			'segments' => $segments,
 			'groups' => $groups,
-			'templates' => $this->api->get( 'templates', [
-				'type' => 'user',
-			]),
+			'templates' => $templates,
 			'post_type_obj' => $this->post_type_obj,
 			'settings_key' => $this->settings_key,
 			'saved_settings' => get_option( $this->settings_key, false ),
