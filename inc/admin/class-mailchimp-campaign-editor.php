@@ -33,7 +33,6 @@ class CampaignEditor extends MCMetaBox {
 			'sort_field' => 'name'
 		]);
 
-
 		foreach ( $lists['lists'] as $list ) {
 			$list_segments = $this->api->get( 'lists/' . $list['id'] . '/segments' );
 			if ( ! empty( $list_segments['type'] ) && 'saved' === $list_segments['type'] ) {
@@ -275,9 +274,29 @@ class CampaignEditor extends MCMetaBox {
 				],
 			]);
 		}
-		$content_response = $this->api->put( 'campaigns/' . $response['id'] . '/content', [
-			'html' => $html,
-		]);
+
+		/**
+		 * Filter the campaign content put parameters
+		 *
+		 * @param Array $params An array of request body parameters, as described in the "put" section of https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/content/#%20
+		 * @param WP_Post $post The post that is being turned into a MailChimp Campaign
+		 * @param int $id The campaign ID
+		 *
+		 * @link https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/content/
+		 */
+		$campaign_params = apply_filters(
+			'mailchimp_tools_campaign_content',
+			array(
+				'html' => $html,
+			),
+			$post,
+			$response['id'],
+		);
+
+		$content_response = $this->api->put(
+			'campaigns/' . $response['id'] . '/content',
+			$campaign_params
+		);
 	}
 
 	public function enqueue_assets() {
