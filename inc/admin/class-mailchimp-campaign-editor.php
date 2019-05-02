@@ -27,6 +27,12 @@ class CampaignEditor extends MCMetaBox {
 		$lists = $this->api->get( 'lists' );
 		$segments = array();
 		$groups = array();
+		$templates = $this->api->get( 'templates', [
+			'type' => 'user',
+			'count' => 100,
+			'sort_field' => 'name'
+		]);
+
 
 		foreach ( $lists['lists'] as $list ) {
 			$list_segments = $this->api->get( 'lists/' . $list['id'] . '/segments' );
@@ -96,9 +102,7 @@ class CampaignEditor extends MCMetaBox {
 			'lists' => $lists,
 			'segments' => $segments,
 			'groups' => $groups,
-			'templates' => $this->api->get( 'templates', [
-				'type' => 'user',
-			]),
+			'templates' => $templates,
 			'existing' => $existing,
 			'mc_api_endpoint' => $mc_api_endpoint,
 			'web_id' => $web_id,
