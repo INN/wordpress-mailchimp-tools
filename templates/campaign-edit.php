@@ -24,12 +24,12 @@
 		<ul>
 		<?php foreach ( $lists['lists'] as $key => $list ) { ?>
 			<li class="list">
-				<?php if ( ! empty( $existing ) ) { ?>
-					<input type="radio" name="mailchimp[list_id]" value="<?php echo $list['id']; ?>" <?php checked( $existing['list_id'], $list['id'] ); ?>><?php echo $list['name']; ?></input>
+				<?php if ( ! empty( $existing['recipients']['list_id'] ) ) { ?>
+					<input type="radio" name="mailchimp[list_id]" value="<?php echo $list['id']; ?>" <?php checked( $existing['recipients']['list_id'], $list['id'] ); ?>><?php echo $list['name']; ?></input>
 				<?php } elseif ( ! empty( $saved_settings['list_id'] ) ) { ?>
 					<input type="radio" name="mailchimp[list_id]" value="<?php echo $list['id']; ?>" <?php checked( $saved_settings['list_id'], $list['id'] ); ?>><?php echo $list['name']; ?></input>
 				<?php } else { ?>
-					<input type="radio" name="mailchimp[list_id]" value="<?php echo $list['id']; ?>" <?php checked( $existing['list_id'], $list['id'] ); ?>><?php echo $list['name']; ?></input>
+					<input type="radio" name="mailchimp[list_id]" value="<?php echo $list['id']; ?>" <?php checked( $existing['recipients']['list_id'], $list['id'] ); ?>><?php echo $list['name']; ?></input>
 				<?php } ?>
 
 				<?php if ( isset( $segments[ $list['id'] ] ) ) { ?>
@@ -52,22 +52,26 @@
 					<h4>Groups:</h4>
 					<ul class="group-list">
 
-					<?php foreach ( $groups[ $list['id'] ]['categories'] as $group ) { ?>
-						<li class="group"><input type="radio" <?php checked( $saved_settings['group']['saved_group_id'], $group['id'] ); ?>
-							name="mailchimp[group][saved_group_id]"
-							value="<?php echo $group['id']; ?>"><?php echo $group['title']; ?></input>
-							<?php if ( ! empty( $group['interests'] ) ) { ?>
-							<ul>
-								<?php foreach ( $group['interests'] as $subgroup ) { ?>
-								<li class="subgroup"><input type="radio" <?php checked( $saved_settings['subgroup']['saved_subgroup_bit'], $subgroup['id'] ); ?>
-									name="mailchimp[subgroup][saved_subgroup_bit]"
-									value="<?php echo $subgroup['id']; ?>"><?php echo $subgroup['name']; ?></input>
-								</li>
+						<?php foreach ( $groups[ $list['id'] ]['categories'] as $group ) { ?>
+							<li class="group">
+								<input type="radio" <?php checked( $saved_settings['group']['saved_group_id'], $group['id'] ); ?>
+									name="mailchimp[group][saved_group_id]"
+									value="<?php echo $group['id']; ?>"
+									>
+									<?php echo $group['title']; ?>
+								</input>
+								<?php if ( ! empty( $group['interests'] ) ) { ?>
+									<ul>
+										<?php foreach ( $group['interests'] as $subgroup ) { ?>
+										<li class="subgroup"><input type="radio" <?php checked( $saved_settings['subgroup']['saved_subgroup_bit'], $subgroup['id'] ); ?>
+											name="mailchimp[subgroup][saved_subgroup_bit]"
+											value="<?php echo $subgroup['id']; ?>"><?php echo $subgroup['name']; ?></input>
+										</li>
+										<?php } ?>
+									</ul>
 								<?php } ?>
-							</ul>
-							<?php } ?>
-						</li>
-					<?php } ?>
+							</li>
+						<?php } ?>
 					</ul>
 				<?php } ?>
 			</li>
@@ -75,12 +79,23 @@
 		</ul>
 
 		<h3>Campaign details:</h3>
-		<label for="name"><p>Campaign title:</p>
-		<input type="text" name="mailchimp[title]" placeholder="Campaign title (for internal use)" <?php if ( $existing['title'] ) { ?>value="<?php echo $existing['title']; ?>"<?php } ?>></input><br />
+
+		<label for="name">
+			<p>Campaign title: (for internal use)</p>
+			<input
+				type="text"
+				name="mailchimp[title]"
+				placeholder="Campaign title (for internal use)"
+				<?php if ( $existing['settings']['title'] ) { ?>
+					value="<?php echo esc_attr( $existing['settings']['title'] ); ?>"
+				<?php } ?>
+				></input>
+			<br />
 			<a href="#" id="mailchimp-use-post-title-for-campaign-title">Use post title as campaign title</a>
 		</label>
+
 		<label for="subject"><p>Campaign subject:</p>
-			<input type="text" name="mailchimp[subject]" placeholder="Campaign email subject line (subscribers will see this)" <?php if ( $existing['subject'] ) { ?>value="<?php echo $existing['subject']; ?>"<?php } ?>></input><br />
+			<input type="text" name="mailchimp[subject]" placeholder="Campaign email subject line (subscribers will see this)" <?php if ( $existing['settings']['subject_line'] ) { ?>value="<?php echo $existing['settings']['subject_line']; ?>"<?php } ?>></input><br />
 			<a href="#" id="mailchimp-use-post-title-for-campaign-subject">Use post title as campaign subject</a>
 		</label>
 
@@ -90,7 +105,7 @@
 				<?php foreach ( $templates['templates'] as $key => $template ) { ?>
 					<option value="<?php echo $template['id']; ?>"
 						<?php selected( $saved_settings['template_id'], $template['id'] ); ?>
-						<?php selected( $existing['template_id'], $template['id'] ); ?> /><?php echo $template['name']; ?></option>
+						<?php selected( $existing['settings']['template_id'], $template['id'] ); ?> /><?php echo $template['name']; ?></option>
 				<?php } ?>
 			</select>
 		</div>
