@@ -250,7 +250,8 @@ class CampaignEditor extends MCMetaBox {
 					'segment_opts' => $segment_options,
 				],
 				'settings' => [
-					'subject_line' => $post->post_title,
+					'subject_line' => $data['subject_line'],
+					'title' => $data['title'],
 					'from_name' => $list['campaign_defaults']['from_name'],
 					'reply_to' => $list['campaign_defaults']['from_email'],
 				],
@@ -263,14 +264,15 @@ class CampaignEditor extends MCMetaBox {
 			}
 		} else {
 			$response = $this->api->patch( 'campaigns/' . $cid, [
-				'settings' => [
-					'subject_line' => $post->post_title,
-					'from_name' => $list['campaign_defaults']['from_name'],
-					'reply_to' => $list['campaign_defaults']['from_email'],
-				],
 				'recipients' => [
 					'list_id' => $list['id'],
 					'segment_opts' => $segment_options,
+				],
+				'settings' => [
+					'subject_line' => $data['subject_line'],
+					'title' => $data['title'],
+					'from_name' => $list['campaign_defaults']['from_name'],
+					'reply_to' => $list['campaign_defaults']['from_email'],
 				],
 			]);
 		}
