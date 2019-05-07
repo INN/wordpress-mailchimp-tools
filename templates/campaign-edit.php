@@ -80,7 +80,7 @@
 
 		<h3>Campaign details:</h3>
 
-		<label for="name">
+		<label for="mailchimp[title]">
 			<p>Campaign title: (for internal use)</p>
 			<input
 				type="text"
@@ -94,13 +94,13 @@
 			<a href="#" id="mailchimp-use-post-title-for-campaign-title">Use post title as campaign title</a>
 		</label>
 
-		<label for="subject"><p>Campaign subject:</p>
-			<input type="text" name="mailchimp[subject]" placeholder="Campaign email subject line (subscribers will see this)" <?php if ( $existing['settings']['subject_line'] ) { ?>value="<?php echo $existing['settings']['subject_line']; ?>"<?php } ?>></input><br />
+		<label for="mailchimp[subject_line]"><p>Campaign subject:</p>
+			<input type="text" name="mailchimp[subject_line]" placeholder="Campaign email subject line (subscribers will see this)" <?php if ( $existing['settings']['subject_line'] ) { ?>value="<?php echo $existing['settings']['subject_line']; ?>"<?php } ?>></input><br />
 			<a href="#" id="mailchimp-use-post-title-for-campaign-subject">Use post title as campaign subject</a>
 		</label>
 
 		<div id="mailchimp-tools-template" <?php if ( ! empty( $existing ) && 'plaintext' === $existing['type'] || ! empty( $saved_settings['type'] ) && 'plaintext' === $saved_settings['type'] ) { ?>style="display: none;"<?php } ?>>
-			<h3>Choose a template:</h3>
+			<label for="mailchimp[template_id]">Choose a template:</label><br/>
 			<select name="mailchimp[template_id]">
 				<?php foreach ( $templates['templates'] as $key => $template ) { ?>
 					<option value="<?php echo $template['id']; ?>"

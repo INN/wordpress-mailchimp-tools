@@ -9,7 +9,7 @@
           'mailchimp[type]',
           'mailchimp[list_id]',
           'mailchimp[title]',
-          'mailchimp[subject]'
+          'mailchimp[subject_line]'
         ],
         valid = true;
 
@@ -52,7 +52,7 @@
   });
 
   $('#mailchimp-use-post-title-for-campaign-subject').click(function() {
-    container.find('input[name="mailchimp[subject]"]').val($('#title').val());
+    container.find('input[name="mailchimp[subject_line]"]').val($('#title').val());
     return false;
   });
 
