@@ -154,8 +154,6 @@ function mailchimp_tools_api_get_all_templates( $use_cache = false ) {
 	$transient_key = 'mailchimp_tools_templates';
 	$transient = get_transient( $transient_key );
 	if ( empty( $transient ) || $use_cache ) {
-		error_log(var_export( 'templates from server', true));
-
 		$api = mailchimp_tools_get_api_handle();
 
 		$return = $api->get( 'templates', [
@@ -166,7 +164,6 @@ function mailchimp_tools_api_get_all_templates( $use_cache = false ) {
 
 		set_transient( $transient_key, $return, 5 * MINUTE_IN_SECONDS );
 	} else {
-		error_log(var_export( 'templates from transient', true));
 		$return = $transient;
 	}
 
