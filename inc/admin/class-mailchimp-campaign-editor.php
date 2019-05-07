@@ -226,8 +226,6 @@ class CampaignEditor extends MCMetaBox {
 		// Grab the list from MC to use its default values for to/from address
 		$list = $this->api->get( 'lists/' . $data['list_id'] );
 
-		$html = apply_filters( 'the_content', $post->post_content );
-
 		$campaign_content = array(
 			'text' => wp_strip_all_tags( $html ),
 			'sections' => array(
