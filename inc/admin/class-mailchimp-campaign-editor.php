@@ -253,10 +253,11 @@ class CampaignEditor extends MCMetaBox {
 				],
 			]);
 
-			update_post_meta( $post->ID, 'mailchimp_web_id', $response['web_id'] );
-			update_post_meta( $post->ID, 'mailchimp_cid', $response['id'] );
-			if ( isset( $response['errors'] ) ) {
-				update_post_meta( $post->ID, 'mailchimp_error', $response['errors'] );
+			if ( isset( $response['web_id'] ) ) {
+				update_post_meta( $post->ID, 'mailchimp_web_id', $response['web_id'] );
+			}
+			if ( isset( $response['id'] ) ) {
+				update_post_meta( $post->ID, 'mailchimp_cid', $response['id'] );
 			}
 		} else {
 			$response = $this->api->patch( 'campaigns/' . $cid, [
@@ -271,6 +272,16 @@ class CampaignEditor extends MCMetaBox {
 					'reply_to' => $list['campaign_defaults']['from_email'],
 				],
 			]);
+		}
+
+		if ( isset( $response['status'] ) && $response['status'] == 404 ) {
+			delete_post_meta( $post->ID, 'mailchimp_cid' );
+			delete_post_meta( $post->ID, 'mailchimp_web_id' );
+
+			update_post_meta( $post->ID, 'mailchimp_error', $response );
+			return $response;
+		} else if ( isset( $response['errors'] ) ) {
+			update_post_meta( $post->ID, 'mailchimp_error', $response['errors'] );
 		}
 
 		/**
