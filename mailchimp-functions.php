@@ -89,7 +89,7 @@ if ( ! function_exists( 'mailchimp_tools_get_existing_campaign_for_post' ) ) {
 				$existing_campaign = $api->get( 'campaigns/' . $cid );
 				if ( isset( $existing_campaign['id'] ) ) { // @TODO test this offset
 					$ret = $existing_campaign;
-					set_transient( $transient_key, $ret, 60 );
+					set_transient( $transient_key, $ret, MINUTE_IN_SECONDS );
 					return $ret;
 				}
 			}
@@ -139,3 +139,36 @@ function mailchimp_tools_register_assets() {
 	);
 }
 add_action( 'init', 'mailchimp_tools_register_assets' );
+
+/**
+ * Get templates, and cache in transient
+ *
+ * Gets 100 templates, stores in transient with five-minute expiration time
+ *
+ * @param bool $use_cache Whether or not to use a value cached in a transient. If true, the transient will be updated with the new version.
+ * @return Array
+ * @uses mailchimp_tools_get_api_handle
+ * @link https://developer.mailchimp.com/documentation/mailchimp/reference/templates/#read-get_templates
+ */
+function mailchimp_tools_api_get_all_templates( $use_cache = false ) {
+	$transient_key = 'mailchimp_tools_templates';
+	$transient = get_transient( $transient_key );
+	if ( empty( $transient ) || $use_cache ) {
+		error_log(var_export( 'templates from server', true));
+
+		$api = mailchimp_tools_get_api_handle();
+
+		$return = $api->get( 'templates', [
+			'type' => 'user',
+			'count' => 100,
+			'sort_field' => 'name'
+		]);
+
+		set_transient( $transient_key, $return, 5 * MINUTE_IN_SECONDS );
+	} else {
+		error_log(var_export( 'templates from transient', true));
+		$return = $transient;
+	}
+
+	return $return;
+}

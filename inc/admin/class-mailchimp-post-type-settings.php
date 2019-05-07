@@ -48,11 +48,7 @@ class PostTypeSettings {
 		$lists = $this->api->get( 'lists' );
 		$segments = array();
 		$groups = array();
-		$templates = $this->api->get( 'templates', [
-			'type' => 'user',
-			'count' => 100,
-			'sort_field' => 'name'
-		]);
+		$templates = mailchimp_tools_api_get_all_templates();
 
 		foreach ( $lists['lists'] as $list ) {
 			$list_segments = $this->api->get( 'lists/' . $list['id'] . '/segments' );
