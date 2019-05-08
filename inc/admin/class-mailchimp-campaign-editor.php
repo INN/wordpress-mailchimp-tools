@@ -226,14 +226,6 @@ class CampaignEditor extends MCMetaBox {
 		// Grab the list from MC to use its default values for to/from address
 		$list = $this->api->get( 'lists/' . $data['list_id'] );
 
-		$campaign_content = array(
-			'text' => wp_strip_all_tags( $html ),
-			'sections' => array(
-				'body' => $html,
-				'header' => $post->post_title,
-			),
-		);
-
 		$cid = get_post_meta( $post->ID, 'mailchimp_cid', true );
 
 		if ( empty( $cid ) ) {
