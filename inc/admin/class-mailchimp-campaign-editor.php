@@ -274,10 +274,16 @@ class CampaignEditor extends MCMetaBox {
 			update_post_meta( $post->ID, 'mailchimp_error', $response['errors'] );
 		}
 
+		// assemble the filterable parameters
+		$campaign_params = array();
+		if ( isset( $data['template_id'] ) ) {
+			$campaign_params['template']['id'] = (int) $data['template_id'];
+		}
+
 		/**
 		 * Filter the campaign content put parameters
 		 *
-		 * @param Array $params An array of request body parameters, as described in the "put" section of https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/content/#%20
+		 * @param Array $campaign_params An array of request body parameters, as described in the "put" section of https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/content/#%20
 		 * @param WP_Post $post The post that is being turned into a MailChimp Campaign
 		 * @param int $id The campaign ID
 		 *
@@ -285,9 +291,7 @@ class CampaignEditor extends MCMetaBox {
 		 */
 		$campaign_params = apply_filters(
 			'mailchimp_tools_campaign_content',
-			array(
-				'html' => $html,
-			),
+			$campaign_params,
 			$post,
 			$response['id'],
 		);
