@@ -1,4 +1,15 @@
 <div class="mailchimp-tools">
+	<?php
+		if ( WP_DEBUG ) {
+			?>
+				<details>
+					<summary><?php echo wp_kses_post( __( 'Debug information about the campaign.', 'link-roundups' ) ); ?></summary>
+					<pre><?php echo var_export( $existing, true ); ?></pre>
+				</details>
+			<?php
+		}
+	?>
+
 	<?php if ( ! empty( $existing ) && 'save' !== $existing['status'] ) { ?>
 		<p>A campaign for this post has already been sent. <a target="_blank" href="https://<?php echo $mc_api_endpoint; ?>.admin.mailchimp.com/reports/summary?id=<?php echo $web_id; ?>">Click here view details in MailChimp.</a></p>
 	<?php } else { ?>
