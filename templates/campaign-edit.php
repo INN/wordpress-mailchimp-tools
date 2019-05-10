@@ -1,5 +1,4 @@
 <div class="mailchimp-tools">
-
 	<?php if ( ! empty( $existing ) && 'save' !== $existing['status'] ) { ?>
 		<p>A campaign for this post has already been sent. <a target="_blank" href="https://<?php echo $mc_api_endpoint; ?>.admin.mailchimp.com/reports/summary?id=<?php echo $web_id; ?>">Click here view details in MailChimp.</a></p>
 	<?php } else { ?>
@@ -36,34 +35,92 @@
 					<h4>Saved segments:</h4>
 					<ul class="segment-list">
 					<?php foreach ( $segments[ $list['id'] ] as $segment ) { ?>
+
 						<?php if ( ! empty( $existing ) ) { ?>
-							<li class="segment"><input type="radio" name="mailchimp[segment][saved_segment_id]" value="<?php echo $segment['id']; ?>" <?php checked( $existing['saved_segment']['id'], $segment['id'] ); ?>><?php echo $segment['name']; ?></input></li>
+							<li class="segment">
+								<input type="radio"
+									name="mailchimp[segment][saved_segment_id]"
+									value="<?php echo $segment['id']; ?>"
+									<?php checked( $existing['saved_segment']['id'], $segment['id'] ); ?>
+								>
+									<?php echo $segment['name']; ?>
+								</input>
+							</li>
 						<?php } elseif ( ! empty( $saved_settings['segment'] ) ) { ?>
-							<li class="segment"><input type="radio" name="mailchimp[segment][saved_segment_id]" value="<?php echo $segment['id']; ?>" <?php checked( $saved_settings['segment']['saved_segment_id'], $segment['id'] ); ?>><?php echo $segment['name']; ?></input></li>
+							<li class="segment">
+								<input type="radio"
+									name="mailchimp[segment][saved_segment_id]"
+									value="<?php echo $segment['id']; ?>"
+									<?php checked( $saved_settings['segment']['saved_segment_id'], $segment['id'] ); ?>
+								>
+									<?php echo $segment['name']; ?>
+								</input>
+							</li>
 						<?php } else { ?>
-							<li class="segment"><input type="radio" name="mailchimp[segment][saved_segment_id]" value="<?php echo $segment['id']; ?>"><?php echo $segment['name']; ?></input></li>
+							<li class="segment">
+								<input type="radio"
+									name="mailchimp[segment][saved_segment_id]"
+									value="<?php echo $segment['id']; ?>"
+								>
+									<?php echo $segment['name']; ?>
+								</input>
+							</li>
 						<?php } ?>
 					<?php } ?>
 					</ul>
 				<?php } ?>
 
 
-				<?php if ( isset( $groups[ $list['id'] ] ) ) { ?>
+				<?php if ( isset( $groups[ $list['id'] ] ) && !empty( $groups[ $list['id'] ]['categories'] ) ) { ?>
 					<h4>Groups:</h4>
 					<ul class="group-list">
 
-						<?php foreach ( $groups[ $list['id'] ]['categories'] as $group ) { ?>
+						<?php
+							// @todo rewrite this section to handle multiple interest groups - @benlk 2019-05-09
+
+							if ( isset ( $existing['recipients']['segment_opts'] ) ) {
+								// create a set of settings to match $saved_settings['group'] and $saved_settings['subgroup'] 
+								$check_groups = array();
+								
+								// what if there are no conditions on the segment within the list?
+								if ( ! empty( $existing['recipients']['segment_opts']['conditions'] ) ) {
+									foreach ( $existing['recipients']['segment_opts']['conditions'] as $condition ) {
+										if ( ! empty( $condition['field'] ) ) {
+											// expecting something like 'field' => 'interests-4175eb03e8'
+											$check_group_exploded= explode( '-', $condition['field'] );
+
+											// this only supports one group
+											$check_groups['group']['saved_group_id'] = $check_group_exploded[1];
+										}
+
+										if ( ! empty( $condition['value'] ) ) {
+											// this overwrites if there is more than value chosen
+											foreach ( $condition['value'] as $value ) {
+												$check_groups['subgroup']['saved_subgroup_bit'] = $value;
+											}
+										}
+									}
+								}
+							} else {
+								$check_groups = array(
+									'group' => $saved_settings['group'],
+									'subgroup' => $saved_settings['saved_subgroup_bit'],
+								);
+							}
+							foreach ( $groups[ $list['id'] ]['categories'] as $group ) { 
+						?>
 							<li class="group">
-								<input type="radio" <?php checked( $saved_settings['group']['saved_group_id'], $group['id'] ); ?>
+								<input type="radio" <?php checked( $check_groups['group']['saved_group_id'], $group['id'] ); ?>
 									name="mailchimp[group][saved_group_id]"
 									value="<?php echo $group['id']; ?>"
 									>
 									<?php echo $group['title']; ?>
 								</input>
+
 								<?php if ( ! empty( $group['interests'] ) ) { ?>
 									<ul>
 										<?php foreach ( $group['interests'] as $subgroup ) { ?>
-										<li class="subgroup"><input type="radio" <?php checked( $saved_settings['subgroup']['saved_subgroup_bit'], $subgroup['id'] ); ?>
+										<li class="subgroup"><input type="radio" <?php checked( $check_groups['subgroup']['saved_subgroup_bit'], $subgroup['id'] ); ?>
 											name="mailchimp[subgroup][saved_subgroup_bit]"
 											value="<?php echo $subgroup['id']; ?>"><?php echo $subgroup['name']; ?></input>
 										</li>
