@@ -64,9 +64,15 @@ class CampaignEditor extends MCMetaBox {
 		 * Do this here instead of in the campaign-edit.php template
 		 * because it's fairly complex to parse the necessary info
 		 * from $existing data.
+		 *
+		 * @todo make this support mltiple interest groups?
 		 */
 		if ( ! empty( $existing['segment_opts'] ) ) {
 			$existing_seg_opts = $existing['segment_opts'];
+
+			// reset these
+			$saved_settings['group']['saved_group_id'] = 0;
+			$saved_settings['subgroup']['saved_subgroup_bit'] = 0;
 
 			if ( isset( $existing_seg_opts['conditions'] ) ) {
 				$conditions = $existing_seg_opts['conditions'][0];
@@ -91,6 +97,35 @@ class CampaignEditor extends MCMetaBox {
 				}
 				$saved_settings = wp_parse_args( $saved_group_settings, $saved_settings );
 			}
+		} else if ( isset ( $existing['recipients']['segment_opts'] ) ) {
+			// reset these
+			$saved_settings['group']['saved_group_id'] = 0;
+			$saved_settings['subgroup']['saved_subgroup_bit'] = 0;
+
+			if ( ! empty( $existing['recipients']['segment_opts']['conditions'] ) ) {
+				foreach ( $existing['recipients']['segment_opts']['conditions'] as $condition ) {
+					if ( ! empty( $condition['field'] ) ) {
+						// this only supports one group
+						// expecting something like 'field' => 'interests-4175eb03e8'
+						$saved_settings['group']['saved_group_id'] = str_replace( 'interests-', '', $condition['field'] );
+					}
+
+					if ( ! empty( $condition['value'] && is_array( $condition['value'] ) ) ) {
+						// this overwrites if there is more than value chosen
+						foreach ( $condition['value'] as $value ) {
+							$saved_settings['subgroup']['saved_subgroup_bit'] = $value;
+						}
+					}
+				}
+			}
+		}
+
+		// prevent undefined indices
+		if ( empty ( $saved_settings['group']['saved_group_id'] ) ) {
+			$saved_settings['group']['saved_group_id'] = 0;
+		}
+		if ( empty ( $saved_settings['subgroup']['saved_subgroup_bit'] ) ) {
+			$saved_settings['subgroup']['saved_subgroup_bit'] = 0;
 		}
 
 		$context = array(
@@ -197,13 +232,14 @@ class CampaignEditor extends MCMetaBox {
 		}
 
 		// Stash segment options if present and unset
-		$segment_options = null;
+		$segment_options = array();
 		if ( isset( $data['segment'] ) ) {
 			$segment_options = $data['segment'];
 			unset( $data['segment'] );
 		}
 
 		// Stash group segment options if present and unset
+		// @todo this overwrites segment data; probably should not
 		if ( isset( $data['group'] ) && isset( $data['subgroup'] ) ) {
 			$group = $data['group'];
 			$subgroup = $data['subgroup'];
@@ -221,6 +257,9 @@ class CampaignEditor extends MCMetaBox {
 			);
 			unset( $data['group'] );
 			unset( $data['subgroup'] );
+		} else {
+			$segment_options['match'] = 'any';
+			$segment_options['conditions'] = array();
 		}
 
 		// Grab the list from MC to use its default values for to/from address
@@ -264,11 +303,13 @@ class CampaignEditor extends MCMetaBox {
 			]);
 		}
 
-		if ( isset( $response['status'] ) && $response['status'] == 404 ) {
+		if ( isset( $response['status'] ) && $response['status'] == 400 ) {
 			delete_post_meta( $post->ID, 'mailchimp_cid' );
 			delete_post_meta( $post->ID, 'mailchimp_web_id' );
 
 			update_post_meta( $post->ID, 'mailchimp_error', $response );
+
+			// short-circuit; no need to attempt setting the campaign content
 			return $response;
 		} else if ( isset( $response['errors'] ) ) {
 			update_post_meta( $post->ID, 'mailchimp_error', $response['errors'] );
