@@ -35,7 +35,7 @@ class MailChimpSettings {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 	}
 
-	public function add_options_page() {
+	public static function add_options_page() {
 		add_options_page(
 			'MailChimp Settings',
 			'MailChimp Settings',
@@ -45,7 +45,7 @@ class MailChimpSettings {
 		);
 	}
 
-	public function register_settings() {
+	public static function register_settings() {
 		register_setting(
 			'mailchimp_settings',
 			'mailchimp_settings'
@@ -65,14 +65,21 @@ class MailChimpSettings {
 		);
 	}
 
-	public function mailchimp_api_key_input() {
-		$settings = get_option( 'mailchimp_settings' ); ?>
-		<input style="width: 300px;" type="text" name="mailchimp_settings[mailchimp_api_key]" id="mailchimp_api_key"
-			value="<?php echo $settings['mailchimp_api_key']; ?>"
-			placeholder="MailChimp API Key" /><?php
+	public static function mailchimp_api_key_input() {
+		$settings = get_option( 'mailchimp_settings' );
+		?>
+			<input
+				style="width: 300px;"
+				type="text"
+				name="mailchimp_settings[mailchimp_api_key]"
+				id="mailchimp_api_key"
+				value="<?php echo esc_attr( $settings['mailchimp_api_key'] ); ?>"
+				placeholder="MailChimp API Key"
+			/>
+		<?php
 	}
 
-	public function render_settings_page() {
+	public static function render_settings_page() {
 		mailchimp_tools_render_template( 'settings.php' );
 	}
 }
