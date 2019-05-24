@@ -334,7 +334,7 @@ class CampaignEditor extends MCMetaBox {
 			'mailchimp_tools_campaign_content',
 			$campaign_params,
 			$post,
-			$response['id'],
+			$response['id']
 		);
 
 		$content_response = $this->api->put(
